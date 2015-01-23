@@ -1,0 +1,749 @@
+f.first.class
+f = Bio::FlatFile.auto('/home/jearl/Downloads/polished_assembly.fastq')
+first_contig = f.first
+first_contig.quality_scores
+first_contig.quality_scores.inject{ |sum, el| sum + el }.to_f / arr.size
+first_contig.quality_scores.inject{ |sum, el| sum + el }.to_f / first_contig.quality_scores.size
+first_contig.quality_scores.size
+second_contig = f.first
+second_contig.size
+second_contig.quality_scores.size
+second_contig.quality_scores.inject{ |sum, el| sum + el }.to_f / second_contig.quality_scores.size
+fifteen = Bio::Sequence::NA.new("ATAGAGACTCAGAGCT").reverse
+fourteen = Bio::Sequence::NA.new("CGTCTATATACGTATA").reverse
+nineteen = Bio::Sequence::NA.new("CGCATCTGTGCATGCA").reverse
+fifteen = Bio::Sequence::NA.new("ATAGAGACTCAGAGCT").reverse_complement
+fourteen = Bio::Sequence::NA.new("CGTCTATATACGTATA").reverse_complement
+nineteen = Bio::Sequence::NA.new("CGCATCTGTGCATGCA").reverse_complement
+seq = Bio::Sequence::NA.new("TCAGACGATGCGTCAT")
+seq.reverse_complement
+File.read('strain_info').split
+File.read('strand_info').split
+Hash[File.read('strand_info').split]
+Hash[*File.read('strand_info').split]
+file = Bio::FlatFile.auto('length_filtered.fastq')
+file = Bio::FlatFile.auto('length_filtered.fastq');\n
+file = Bio::FlatFile.auto('length_filtered.fastq');0
+file.class
+entry = file.first
+entry.quality
+entry.qual
+entry.qualities
+entry.name
+entry.methods.sort
+entry.length
+entry.nalen
+entry.naseq.class
+entry.naseq.length
+test_file = File.open('file.test', 'w')
+test_file.write(entry.to_s)
+entry.class
+test_file.write("example")
+test_file.writable?
+writable?(test_file)
+writable?('file.test')
+File.writable?('file.test')
+test_file.close
+ff = Bio::FlatFile.auto('barcode1_ee1_tunc1500.fasta')
+ff.count
+ff = Bio::FlatFile.auto('0001_Forward--0002_Forward.fastq')
+first = ff.first
+first.class
+first.definition.split[0]
+first.reverse_complement
+first.seq.class
+first.seq
+first.naseq.class
+seq = first.naseq
+seq.class
+first.naseq.reverse_complement
+first.naseq.reverse_complement!
+first.sequence_string
+first.sequence_string.methods.sort
+first.sequence_string.class
+first.sequence_string = first.naseq.reverse_complement.to_s
+first.entry_id
+test = Bio::Fastq.new(first.entry_id)
+test.entry_id
+first.naseq = first.naseq.reverse_complement.to_s
+test = Bio::Fastq.new(definition => first.definition, sequence_string => first.naseq.reverse_complement.to_s, )
+test = Bio::Fastq.new(definition => first.definition, sequence_string => first.naseq.reverse_complement.to_s )
+first.inspect
+first.instance_variables
+first.instance_variables.sequence_string
+first.instance_variables[sequence_string]
+first.instance_variables[1]
+first.instance_variable_set
+first.instance_variable_set(@sequence_string, 'agtttg')
+first.instance_variable_set(:sequence_string, 'agtttg')
+first.instance_variable_set(sequence_string => 'agtttg')
+first.instance_variable_set(sequence_string: 'agtttg')
+first.instance_variable_set(sequence_string, 'agtttg')
+first
+first.public_methods.sort
+first.definition
+first.naseq
+puts first.to_s
+first.qualities.reverse
+first.methods.sort
+first.quality_scores
+first.qualities
+first.quality_string
+first.quality_string.reverse
+first.quality_string.methods.sort
+first.quality_string.upcase
+forward = Bio::Sequence::NA.new('GRAGAGTTTGATYMTGGCTCAG')
+forward.to_re
+forward.to_re.class
+forward.to_re.methods.sort
+forward.to_re.to_yaml
+exit
+exit
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln')
+
+aln.class
+aln = Bio::ClustalW::Report.new(File.read('test.aln')
+aln = Bio::Alignment::OriginalAlignment.new(File.read('test.aln')
+)
+aln = Bio::ClustalW::Report.new(File.read('test.aln'))
+aln.class
+aln.methods.sort
+aln.header
+aln.inspect
+aln.methods.sort
+aln.get_sequence('B508')
+aln.pretty_print
+aln.pretty_print_inspect
+aln.algn
+aln.align
+aln.align('B743')
+aln.align['B743']
+aln.alignment['B743']
+aln.alignment['B743'].class
+aln.alignment['B743'].methods.sort
+aln.class
+bio_aln = aln.alignment
+local
+instance_variables
+instance
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln'))
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln'));
+0
+aln.class
+bio_aln = aln.alignment
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln'));0
+bio_aln = aln.alignment
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln'))
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln')).alignment
+aln = Bio::ClustalW::Report.new(File.read('test.aln'))
+bio_aln = Bio::ClustalW::Report.new(File.read('test.aln')).alignment
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln')).alignment;0
+aln
+local_variables
+bio_aln.class
+bio_aln.pretty_print_inspect
+aln.class
+bio_aln = aln.alignment
+aln.methods.sort
+local_variables
+bio_aln.class
+aln.class
+bio_aln.methods.sort
+bio_aln.s11
+bio_aln['s11']
+bio_aln.size
+bio_aln.first
+bio_aln.first.name
+bio_aln.first.class
+bio_aln.first
+bio_aln.keys['s11']
+bio_aln
+bio_aln.seqs['s11']
+bio_aln.entries
+bio_aln.count
+bio_aln.class
+bio_aln[]('s11')
+bio_aln['s11']
+bio_aln.keys
+bio_aln['S11']
+bio_aln['S11'].class
+bio_aln['S11'].subseq(1, 10)
+bio_aln['S11'][1, 10]
+'a' == 'a'
+1..5 do |n|
+puts n
+end
+puts 'stuff'[1]
+'stuff'[1] == 'stuff'[1]
+'stuff'[1] == 'atuff'[1]
+things += 1 if 'stuff'[1] == 'atuff'[1]
+things =0
+things += 1 if 'stuff'[1] == 'atuff'[1]
+things
+1..5
+1..5.each
+(1..5).each
+(1..5)
+(1..5).each do |n|
+puts n
+end
+10/5
+window =5
+s = atcgtagctagctagctagctag
+s = 'atcgtagctagctagctagctag'
+window..s.size
+(window..s.size).step(2) do |n|
+puts n
+end
+(50..869680).step(100000)
+(50..869680).step(100000) do n
+(50..869680).step(100000) do |n|
+puts n
+end
+win1 = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ttggataatttgaagttttaataaaaatcgctcaaccagccaatattgcccatcaagcacctgtccgactttttcggtcagctcatctggattaatatccgccaaaaaccctaatcgcccccgattgataccaagtactggcacgccagtacctgccatcacagacgccgcctgaagcattgagccatcaccgcccaccacgatgaccaaatcgcactgctcacccatcgtgtggcgtggtgtgattatga---tgctgtca--tctgcatgctcaccatcaatcaaaataccatcaatggccgct-----gtctgtgcgtcaatgacaatcgataaatgacgcatcttcagcagtctaatgagttcgt---------------------ttagcgtttct------------------acaatactggctttgcctgcacgcc--------'
+win2 = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ttggataatttgaagttttaataaaaatcgctcaaccagccaatattgcccatcaagcacctgtccgactttttcggtcagctcatctggattaatatccgccaaaaaccccaatcgcccccgattgatgccaagtactggcacgccagtacctgccatcacagacgccgcctgaagcattgagccatcaccgcccactacgatgaccaaatcgcactgctcacccatcgtgtggcgtggtgtgattatga---tgctgtca--tctgcatgctcaccatcaatcaaaataccatcaatggccgct-----gtctgtgcgtcaatgacaatcgataaatgacgcatcttcagcagtctaatgagttcat---------------------ttagagtttct------------------acaatactggctttgcctgcacgcc--------'
+curr_win_score = 0
+1.size).each do |j|
+_score += 1 if win1[j] == win2[j]
+(0..win1.size).each do |j|
+curr_win_score += 1 if win1[j] == win2[j]
+end
+curr_win_score
+curr_win_score/1000
+(curr_win_score/1000).to_f
+curr_win_score
+(curr_win_score.to_f/1000)
+local_variables
+bio_aln.class
+aln.class
+aln.keys
+exit
+
+;
+
+quit
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln')).alignment
+aln.class
+aln.keys
+aln.Z7574
+aln.methods.sort
+consensus = aln.consensus_iupac()
+aln.columns[3]
+require 'bio-alignment'
+require 'bio-alignment'
+exit
+require 'bio-alignment'
+aln = Bio::ClustalW::Report.new(File.read('core_w_macacae.aln')).alignment;0
+consensus = aln.consensus_iupac()
+require 'bio-alignment/bioruby'
+include Bio::BioAlignment
+aln2 = Alignment.new
+Bio::FlatFile.auto('core_w_macacae.aln.fasta').each_entry do |e| 
+aln2<<e
+end
+Bio::FlatFile.auto('core_w_macacae.aln.fasta').each_entry do |e| 
+aln2 << e
+end
+aln2 << Bio::Sequence::NA.new("atgcgt")
+aln2.class
+aln2.class.methods.sort
+aln2.inspect
+seq = Bio::Sequence::NA.new("atgcgt")
+seq.inspect
+seq.methods.sort
+seq.methods.names
+seq.names
+aln2 << seq
+aln2 << Bio::Sequence::NA.new("atgcatgcaaaa")
+require 'bio-alignment'
+exit
+$: << './lib'
+require 'bio-alignment'
+exit
+$: << './lib'
+require 'bio-alignment'
+exit
+exit
+require 'bio-alignment'
+include Bio::BioAlignment
+aln = Alignment.new
+seq = Bio::Sequence::NA.new('atgc')
+seq.methods
+seq.methods.sort
+seq.id
+seq.name
+require 'bio'
+require 'bio-alignment'
+require 'bio-alignment/bioruby'
+require 'bigbio'
+include Bio::BioAlignment
+aln = Alignment.new
+fasta = FastaReader.new('short_trial.aln.fasta')
+fasta.methods.sort
+fasta.inspect
+fasta.pretty_print_instance_variables
+fasta.f
+fasta.to_yaml
+fasta.each do |rec|
+puts rec
+end
+fasta.firts
+fasta.first
+fasta.first.methods.sort
+fasta.first.inspect
+fasta.first.descr
+fasta.first.seq
+exit
+bio_gbk = Bio::GenBank.open('Z2491.gbk')
+    bio_gbk.each do |e|
+      e.features.drop(1).each do |gene|
+        count += 1
+        na_seq = Bio::Sequence::NA.new(e.naseq.splicing(gene.position))
+        begin
+          next if gene.feature == "source"
+          outfile.write(na_seq.to_fasta(f_basename + "_" + count.to_s + " product='\"" +gene.assoc['product'] + "'\" " + "loc="+ gene.position))
+        rescue
+          puts "could not write #{f_basename}"
+          puts "gene number " + count.to_s 
+          puts gene.assoc['product'] unless gene.assoc['product'].nil? #or gene.assoc['product'].exists?
+        end
+      end     
+    end
+bio_gbk.each do |e|
+e.features.drop(1).each do |gene|
+next if gene.feature == "source"
+puts gene.feature
+end
+end
+bio.gbk.first;#
+;
+\
+first = bio_gbk.first;0
+bio_gbk.class
+bio_gbk.info
+bio_gbk.methods.sort
+bio_gbk.first
+bio_gbk.to_yaml
+bio_gbk.methods.sort
+bio_gbk.inspect
+bio_gbk.methods.sort
+bio_gbk.first
+bio_gbk.next
+bio_gbk[1]
+bio_gbk.each[1]
+bio_gbk.next_entry
+bio_gbk.next_entry
+bio_gbk.next_entry
+bio_gbk.drop(1).first
+first.class
+bio_gbk.features.drop(1).first
+exit
+bio_gbk = Bio::GenBank.open('Z2491.gbk')
+File.open('yaml_Z2491.gbk',w)
+File.open('yaml_Z2491.gbk','w')
+f = File.open('yaml_Z2491.gbk','w')
+f.methods.sort
+f.write(bio_gbk.to_yaml)
+exit
+bio_gbk = Bio::GenBank.open('Z2491.gbk')
+f = File.open('yaml_Z2491.gbk','w')
+f << bio_gbk.to_yaml;0
+exit
+bio_gbk = Bio::GenBank.open('Z2491.gbk')
+Bio::FlatFile.auto('103P14B1.gbk')
+entries = Bio::FlatFile.auto('103P14B1.gbk')
+entries.each do |entry|
+exit
+strain = Bio::FlatFile.auto('~/projects/mc201403n35/BBH18.gbk')
+strain = Bio::FlatFile.auto('/home/josh/projects/mc201403n35/BBH18.gbk')
+strain = Bio::FlatFile.auto('/home/jearl/projects/mc201403n35/BBH18.gbk')
+strain.methods.sort
+strain.name
+rec = strain.first
+rec = strain.first;
+:
+rec = strain.first:
+/
+\
+rec = strain.first ;
+rec = strain.first; nill
+rec = strain.first; nil
+rec.methods.sort
+rec.to_s
+rec.class
+strain = Bio::FlatFile.auto('/home/jearl/projects/mc201403n35/BBH18.gbk')
+rec = strain.first; nil
+rec.class
+rec.methods.sort
+rec.organism
+rec.nalen
+rec.naseq.length
+rec.natype
+rec.nid
+gene = rec.features.first
+gene.organism
+gene.methods.sort
+gene.instance_variable_names
+gene.feature
+gene.qualifiers
+gene.qualifiers['organism']
+gene.qualifiers['organism'].to_s
+rec.entry_id
+gene.start
+gene.qualifiers[:organism].to_s
+gene.qualifiers[:organism]
+gene.qualifiers[0]
+gene.qualifiers[0].qualifier
+gene.qualifiers[2].qualifier
+gene.qualifiers[4].qualifier
+gene.qualifiers[3].qualifier
+gene.qualifiers[5].qualifier
+gene.qualifiers[5].value
+rec.methods.sort
+rec.instance_variable_names
+rec.data
+rec.data[1]
+rec.orig
+rec.instance_variables
+rec.tagsize
+rec.origin
+rec.organism
+rec.seq_length
+rec.seq_len
+rec.length
+rec.methods.sort
+rec.pretty_print_instance_variables
+rec.common_name
+exit
+File.basname('12P80B1.gbk')
+File.basename('12P80B1.gbk')
+hep = Bio::FlatFile.auto('vendor/assets/data/heb_b.gb')
+hep = Bio::FlatFile.auto('./vendor/assets/data/heb_b.gb')
+hep = Bio::FlatFile.auto('heb_b.gb')
+hep = Bio::FlatFile.auto('heb_p.gb')
+hep = Bio::FlatFile.auto('heb_b.gb')
+hep = Bio::FlatFile.auto('hep_b.gb')
+strain = Bio::FlatFile.auto('/home/jearl/projects/mc201403n35/BBH18.gbk')
+rec = strain.first
+rec.methods.sort
+rec.instance_variables
+rec.accession
+rec.source
+rec.organism
+rec.entry_id
+rec.length
+rec.nalen
+exit
+strain = Bio::FlatFile.auto('/home/jearl/projects/mc201403n35/BBH18.gbk')
+rec = strain.first
+rec.methods.sort
+rec.seq.size
+exit
+strain = Bio::FlatFile.auto('/home/jearl/projects/mc201403n35/BBH18.gbk')
+rec = strain.first; 0
+rec.methods.sort
+g = rec.first
+g = rec.features.first
+g = rec.features.first
+g = rec.features[1]
+g.methods.sort
+g.feature
+g.length
+g.locations
+g.compliment
+g.strand
+g.methods.sort
+g.locations.methods.sort
+g.locations
+f.locations.strand
+f.locations['strand']
+g.locations.strand
+g.locations['strand']
+g.locations.inspect
+g.methods.sort
+g.display
+g.position
+g.start
+g.hash
+g.instance_variables
+g.position.methods.sort
+g.assoc
+g.assoc.db_xfref
+g.assoc['db_xfref']
+g.assoc['db_xref']
+g.locations
+g.locations.methods.sort
+g.locations.min
+g.locations.length
+g.locations.instance_variables
+g.locations.locations
+g.locations.locations['from']
+g.locations.locations.methods.sort
+g.locations.locations.class
+g.locations.locations.from
+g.locations.locations.to
+g.locations.locations.inspect
+g.locations.inspect
+g.locations.span
+g.locations.range
+g.locations.span.min
+g.locations.span.max
+g.assoc.db_xref
+g.assoc
+g
+g.locations.to_s
+g.position
+g.locations
+g.locations.locations.to
+g.locations.locations["to"]
+g.locations.locations
+g.locations.locations[0]
+g.locations.locations[1]
+g.locations.locations[0].class
+g.locations.class
+g.locations.locations[0].methods.sort
+g.locations.locations[0].to
+g.locations.locations[0].from
+g.locations.locations[0].strand
+g.size
+g.locations.locations[0].size
+g.locations.locations[0].length
+g.locations.length
+g.seq
+g.locations.locations[0].sequence
+g.product
+g.assoc['product']
+g.assoc
+rec.methods.sort
+rec.features.size
+rec.features.class
+rec.features.methods.sort
+g
+g.feature
+g.entry_id
+exit
+f = Bio::FlatFile.auto('~/Downloads/polished_assembly.fastq')
+f = Bio::FlatFile.auto('/home/jearl/Downloads/polished_assembly.fastq')
+f.quality_string
+f.methods.sort
+f.class
+f.first.class
+f.first.quality_string
+f.first.error_probabilities
+f.first.quality_score_type
+f.first.quality_scores
+f.first.class
+f = Bio::FlatFile.auto('/home/jearl/Downloads/polished_assembly.fastq')
+first_contig = f.first
+first_contig.quality_scores
+first_contig.quality_scores.inject{ |sum, el| sum + el }.to_f / arr.size
+first_contig.quality_scores.inject{ |sum, el| sum + el }.to_f / first_contig.quality_scores.size
+first_contig.quality_scores.size
+second_contig = f.first
+second_contig.size
+second_contig.quality_scores.size
+second_contig.quality_scores.inject{ |sum, el| sum + el }.to_f / second_contig.quality_scores.size
+exit
+fifteen = Bio::Sequence::NA.new("ATAGAGACTCAGAGCT").reverse
+fourteen = Bio::Sequence::NA.new("CGTCTATATACGTATA").reverse
+nineteen = Bio::Sequence::NA.new("CGCATCTGTGCATGCA").reverse
+fifteen = Bio::Sequence::NA.new("ATAGAGACTCAGAGCT").reverse_complement
+fourteen = Bio::Sequence::NA.new("CGTCTATATACGTATA").reverse_complement
+nineteen = Bio::Sequence::NA.new("CGCATCTGTGCATGCA").reverse_complement
+seq = Bio::Sequence::NA.new("TCAGACGATGCGTCAT")
+seq.reverse_complement
+exit
+File.read('strain_info').split
+File.read('strand_info').split
+Hash[File.read('strand_info').split]
+Hash[*File.read('strand_info').split]
+file = Bio::FlatFile.auto('length_filtered.fastq')
+file = Bio::FlatFile.auto('length_filtered.fastq');\n
+entry = file.first
+file = Bio::FlatFile.auto('length_filtered.fastq');0
+file.class
+entry = file.first
+entry.methods.sort
+entry.class
+entry.quality
+entry.qual
+entry.qualities
+entry.name
+entry.methods.sort
+entry.length
+entry.nalen
+entry.naseq.class
+entry.naseq.length
+test_file = File.open('file.test', 'w')
+test_file.write(entry.to_s)
+entry.class
+test_file.write("example")
+test_file.writable?
+writable?(test_file)
+writable?('file.test')
+File.writable?('file.test')
+test_file.close
+ff = Bio::FlatFile.auto('barcode1_ee1_tunc1500.fasta')
+first = ff.first
+ff.count
+first.class
+first.methods.sort
+ff = Bio::FlatFile.auto('0001_Forward--0002_Forward.fastq')
+first = ff.first
+first.class
+first.methods.sort
+first.definition
+first.definition.split[0]
+first.reverse_complement
+first.seq.class
+first.seq
+first.sequence_string
+first.sequence_string.class
+first.naseq.class
+first.naseq
+seq = first.naseq
+seq.class
+first.naseq.reverse_complement
+first.naseq
+first.naseq.reverse_complement!
+first.naseq
+first
+puts first.to_s
+first.sequence_string = first.naseq.reverse_complement.to_s
+first.sequence_string
+first.sequence_string.methods.sort
+first.sequence_string.class
+first.sequence_string = first.naseq.reverse_complement.to_s
+first.methods.sort
+first.entry_id
+test = Bio::Fastq.new(first.entry_id)
+test.entry_id
+first.naseq = first.naseq.reverse_complement.to_s
+test = Bio::Fastq.new(definition => first.definition, sequence_string => first.naseq.reverse_complement.to_s, )
+test = Bio::Fastq.new(definition => first.definition, sequence_string => first.naseq.reverse_complement.to_s )
+first.inspect
+first.methods.sort
+first.instance_variables
+first.instance_variables.sequence_string
+first.instance_variables[sequence_string]
+first.instance_variables[1]
+first.instance_variable_set
+first.instance_variable_set(sequence_string, 'agtttg')
+first.instance_variable_set(@sequence_string, 'agtttg')
+first.instance_variable_set(:sequence_string, 'agtttg')
+first.instance_variable_set(sequence_string => 'agtttg')
+first.instance_variable_set(sequence_string: 'agtttg')
+first.instance_variable_set(sequence_string, 'agtttg')
+first.methods.sort
+first
+first.methods.sort
+first.public_methods.sort
+first.definition
+first.naseq
+puts first.to_s
+first.qualities.reverse
+first.methods.sort
+first.quality_scores
+first.qualities
+first.quality_string
+first.quality_string.reverse
+first.quality_string.methods.sort
+first.quality_string.upcase
+forward = Bio::Sequence::NA.new('GRAGAGTTTGATYMTGGCTCAG')
+forward.to_re
+forward.to_re.class
+forward.to_re.methods.sort
+forward.to_re.to_yaml
+exit
+seq = Bio::Sequence::NA.new('agctagctacgtacgt')
+seq.size
+seq.length
+seq[0,seq.length -3]
+seq[0,seq.length - 3]
+"TCAGACGATGCGTCATGRAGAGTTTGATYMTGGCTCAG".length
+"GRAGAGTTTGATYMTGGCTCAG".length
+"TACGGYTACCTTGTTACGACTT".length
+s = 'some_silly_string'
+re = Regexp.new('some(\S*)')
+re.match(s)
+$1
+seq = Bio::Sequence::NA.new('AGTTTGATCATGGCTCAGGACGAACGCTGGCGGCGTGCTTAACACATGCAAGTCGAACGGAAAGGCCCTGCTTTTGTGGGGTGCTCGAGTGGCGAACGGGTGAGTAACACGTGAGTAACCTGCCCTTGACTCTGGGATAACTTCAGGAAACTGGGGCTAATACCGGATAGGAGCTCCTGCTGCATGGTGGGGGTTGGAAAGTTTCGGCGGTTGGGGATGGACTCGCGGCTTATCAGCTTGTTGGTGGGGTAGTGGCTTACCAAGGCTTTGACGGGTAGCCGGCCTGAGAGGGTGACCGGCCACATTGGGACTGAGATACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGCACAATGGGCGGAAGCCTGATGCAGCAACGCCGCGTGCGGGATGACGGCCTTCGGGTTGTAAACCGCTTTCGCCTGTGACGAAGCGTGAGTGACGGTAATGGGTAAAGAAGCACCGGCTAACTACGTGCCAGCAGCCGCGGTGATACGTAGGGTGCGAGCGTTGTCCGGATTTATTGGGCGTAAAGGGCTCGTAGGTGGTTGATCGCGTCGGAAGTGTAATCTTGGGGCTTAACCCTGAGCGTGCTTTCGATACGGGTTGACTTGAGGAAGGTAGGGGAGAATGGAATTCCTGGTGGAGCGGTGGAATGCGCAGATATCAGGAGGAACACCAGTGGCGAAGGCGGTTCTCTGGGCCTTTCCTGACGCTGAGGAGCGAAAGCGTGGGGAGCGAACAGGCTTAGATACCCTGGTAGTCCACGCTGTAAACGGTGGGTACTAGGTGTGGGGTCCATTCCACGGGTTCCGTGCCGTAGCTAACGCTTTAAGTACCCCGCCTGGGGAGTACGGCCGCAAGGCTAAAACTCAAAGGAATTGACGGGGCCCCGCACAAGCGGCGGAGCATGCGGATTAATTCGATGCAACGCGTAGAACCTTACCTGGGTTTGACATGGATCGGGAGTGCTCAGAGATGGGTGTGCCTCTTTTGGGGTCGGTTCACAGGTGGTGCATGGCTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTTGTTCACTGTTGCCAGCACGTTATGGTGGGGACTCAGTGGAGACCGCCGGGGTCAACTCGGAGGAAGGTGGGGATGACGTCAAGTCATCATGCCCCTTATGTCCAGGGCTTCACGCATGCTACAATGGCTGGTACAGAGAGTGGCGAGCCTGTGAGGGTGAGCGAATCTCGGAAAGCCGGTCTCAGTTCGGATTGGGGTCTGCAACTCGACCTCATGAAGTCGGAGTCGCTAGTAATCGCAGATCAGCAACGCTGCGGTGAATACGTTCCCGGGGCTTGTACACACCGCCCGTCAAGTCATGAAAGTTGGTAACACCCGAAGCCGGTGGCCTAACCGTTGTGGGGGAGCCGTCGAAGGTGGGACTGGTGATTAGGACTAAGTCGTAAC')
+seq.subseq[0,22]
+f = seq.subseq[0,22]
+f.length
+f.class
+f_re = Regexp.new('^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag')
+f_re.match(f)
+f_re = Regexp.new('^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag(\S*)')
+f_re.match(f)
+res = f_re.match(f)
+res.class
+res.methods.sort
+res.1
+res[1]
+res[0]
+f_re = Regexp.new('(^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag)(\S*)')
+res = f_re.match(f)
+res[1]
+res[1].class
+res[1].length
+seq
+seq.subseq[res[1].length, seq.length]
+f
+f.class
+r = Bio::Sequence::NA.new('TACGGYTACCTTGTTACGACTT')
+r.to_re
+
+r.reverse_complement.to_re
+r_re = Regexp.new('(\S*)aagtcgtaacaaggta[agr]ccgta')
+r_re.match(seq)
+r_re = Regexp.new('(\S*)aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?')
+r_re.match(seq)
+`head 30 ~/projects/nasal/all_seqs/1400_1400/all_1400_1400_relabeled.fasta`
+`head -30 ~/projects/nasal/all_seqs/1400_1400/all_1400_1400_relabeled.fasta`
+`head -60 ~/projects/nasal/all_seqs/1400_1400/all_1400_1400_relabeled.fasta`
+pre_seq = "TTTGATTCTGGCTCAGGACGAACGCTGGCGGCATGCCTAATACATGCAAGTCGAACGATG\nATATCACTGCTTGCAGTGATTGATTAGTGGCGACGGGTGAGTAACACGTGAGGAACTTGC\nCCATGAGCGGGGGACAACATTCGGAAACGGATGCTAATACCCCATAGGTGGATTGGTCGC\nATGACTAATTCATTAAAGGTGGCTCTGCTACCACTCATGGATAGCCTCGCGGCGTATTAG\nCTAGTTGGTAAGGTAATGGCTTACCAAGGCAGTGATACGTAGCCGACTTGAGAGGGTGAT\nCGGCCACACTGGGACTGAGACACGGCCCAGACTCCTGCGGGAGGCAGCAGTAGGGGATCT\nTCCACAATGGTGCAAACCTGATGGAGCAATGCCGCGTGAGTGAAGAAGGTCTTCGGATCG\nTAAAGCTCTGTTGTTAGAGAAGAACACGTGCTAGGTAACTACTAGCGCCTTGACGTATCT\nAACCAGAAAGTCACGGCTAACTACGTGCCAGCAGCCGCGTAATACGTAGGTGACAAGCGT\nTGTCCGGATTTATTGGGCGTAAAGGGAGCGCAGGCGGTCTGTTTAGTCTAATGTGAAAGC\nCCACGGCTTAACCGCGGAACGGCATTGGGAACTGACAGACTTGATGTAGAAGAGGGAAAA\nTGGAATTCCAAGTTGTAGCGGTGGAATGCGTAGATATTTGGAGGAACACCAGTGGCGAAG\nGCGATTTTCTGGTCTAACATTGACGCTGAGGCTCGAAAGCGTGGGGAGCGAACAGATTAG\nATACCCTGGTAGTCCACGCCGTAAACGATGAGTGCTAAGTGTTGGGGCTTTTCCGGCCCT\nCGTGCTGGAGCTAACGTATTAAGCACTCCGCCTGGGATTACGACCGCAAGGTTGAAACTC\nAAAAGAGTTGACGGGACCCGCACAAGCGGTGGAGCATGTGTTTAATTCGAAGCAACGCGA\nAGAACCTTACCAGCTCTTGACATCTTCTGACAACTCTAGAGATAGAGCGTTCCCTTCGGG\nACAGAAATGACAGGTGGTGCATGGTTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAG\nTCCCGTAACGAGCGCAACCCTTGTTGTTAGTTGCCAGCATTAAGTTGGGCACTTTAACGA\nGACTGCGGTGATAAACCGGAGGAAGGCGGGGATGACGTCAAATATCATGCCCTTATGAGC\nTGGGCTACACACGTGCTACAATGGATGGTACAACGAGCAGCGATCCCGCAAGGGCTAGCT\nAATCTTTCAAAGCCATTCTCAGTTCGGATTGCACTCTGCAACTCGAGTGCATGAAGTCGG\nAATCGCTAGTAATCGCGAGTCAGAATGTCGCGGTGAATCCGTTCCCGGTCTTGTACACAC\nCGCCCGTCACACCACGAGAGTTTGAAACACCCGAAGTCGGCCGGCCAACCCTATGGAGGC\nAGCCGTCGAAGGTGGGTTGATGATTGGGTGAAGTCGTAACAAGGTAGC"
+pre_seq.methods.sort
+pre_seq.split("\n")
+pre_seq.split("\n").join
+seq = Bio::Sequence.NA.new(pre_seq.split("\n").join)
+seq = Bio::Sequence::NA.new(pre_seq.split("\n").join)
+local_variables
+r_re.match(seq)
+r_re = Regexp.new('(aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?)')
+r_re.match(seq)
+r_re = Regexp.new('(aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?)$')
+r_re.match(seq)
+seq
+local_variables
+f
+r
+f_match = f_re.match(seq)
+f_match[1]
+f_match[1].length
+r_match = r_re.match(seq)
+r_match[1].length
+seq
+seq.subseq[f_match[1].length, seq.length - r_match[1].length]
+sub_seq = seq.subseq[f_match[1].length, seq.length - r_match[1].length]
+sub_seq.class
+sub_seq.length
+18 + 16
+seq.length
+seq.length -34
+seq.length - 34
+seq
+sub_seq
+r_match[1].length
+sub_seq = seq.subseq(f_match[1].length, seq.length - r_match[1].length)
+sub_seq.length
+sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+r_match[1]
+history
+_
+__
+__
+hist
+irb_history
+puts Readline::HISTORY.to_a
+File.open('bioruby_history', 'w').puts(Readline::HISTORY.to_a)

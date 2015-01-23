@@ -7,39 +7,36 @@ require 'bio'
 
 
 #Forward Primers
-forward = Regexp.new('^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag')
+f_re = Regexp.new('(^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag)')
 
 #Reverse Primers
-reverse = Regexp.new('aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?$')
+r_re = Regexp.new('(aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?)$')
+
 
 total_seqs = 0
 forward_match = 0
 reverse_match = 0
 both_match = 0
 
-puts "Ambiguous forward primer base regex #{forward}"
-puts "Ambiguous reverse primer base regex #{reverse}"
+puts "Ambiguous forward primer base regex #{f_re}"
+puts "Ambiguous reverse primer base regex #{f_re}"
 
-=begin
+fm = File.open('forward_match_lengths', 'w')
+rm = File.open('reverse_match_lengths', 'w')
 Bio::FlatFile.auto(ARGV[0]) do |ff|
   ff.each do |entry|
-    total_seqs += 1
     seq = entry.naseq
-    forward_match += 1 if forward.match(seq)
-    reverse_match += 1 if reverse.match(seq)
-    both_match += 1 if forward.match(seq) && reverse.match(seq)
-  end
-end
-=end
+    total_seqs += 1
+    f_match = f_re.match(seq)
+    r_match = r_re.match(seq)
+    forward_match += 1 if !f_match.nil? 
+    reverse_match += 1 if !r_match.nil? 
+    both_match += 1 if  !r_match.nil? && !f_match.nil?
+    sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length) if !r_match.nil? && !f_match.nil?
 
-fm = File.open('forward_match_location', 'w')
-rm = File.open('reverse_match_location', 'w')
-Bio::FlatFile.auto(ARGV[0]) do |ff|
-  ff.each do |entry|
-    total_seqs += 1
-    seq = entry.naseq
-    fm.puts forward =~ seq if forward.match(seq)
-    rm.puts reverse =~ seq if reverse.match(seq)
+
+    fm.puts f_match[1].length if !f_match.nil?
+    rm.puts r_match[1].length if !r_match.nil?
   end
 end
 
