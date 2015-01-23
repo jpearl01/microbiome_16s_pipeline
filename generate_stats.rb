@@ -3,7 +3,7 @@ require 'bio'
 
 #Usage: ruby generate_stats.rb 
 
-abort("Can't open the sample pool file!") unless File.exists?("sample_key.txt")
+abort("Can't open the sample pool file! (should be 'sample_key.txt')") unless File.exists?("sample_key.txt")
 
 
 class Barcode_16s_record
