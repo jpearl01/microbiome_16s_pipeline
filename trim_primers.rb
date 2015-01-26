@@ -23,6 +23,7 @@ puts "Ambiguous reverse primer base regex #{f_re}"
 
 fm = File.open('forward_match_lengths', 'w')
 rm = File.open('reverse_match_lengths', 'w')
+output = File.open('primers_trimmed.fasta', 'w')
 Bio::FlatFile.auto(ARGV[0]) do |ff|
   ff.each do |entry|
     seq = entry.naseq
@@ -31,8 +32,12 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
     r_match = r_re.match(seq)
     forward_match += 1 if !f_match.nil? 
     reverse_match += 1 if !r_match.nil? 
-    both_match += 1 if  !r_match.nil? && !f_match.nil?
-    sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length) if !r_match.nil? && !f_match.nil?
+    if  !r_match.nil? && !f_match.nil?
+      both_match += 1 
+      sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+      output.puts(">#{entry.definition}")
+      output.puts(sub_seq)
+    end
 
 
     fm.puts f_match[1].length if !f_match.nil?
