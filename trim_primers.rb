@@ -11,7 +11,7 @@ f_re = Regexp.new('(^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag)')
 
 #Reverse Primers
 r_re = Regexp.new('(aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?)$')
-
+brain_r_re = Regexp.new('(ccagcag?c?c?g?c?g?g?t?a?a?t?)$')
 
 total_seqs = 0
 forward_match = 0
@@ -29,11 +29,12 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
     seq = entry.naseq
     total_seqs += 1
     f_match = f_re.match(seq)
-    r_match = r_re.match(seq)
+    r_match = brain_r_re.match(seq)
     forward_match += 1 if !f_match.nil? 
     reverse_match += 1 if !r_match.nil? 
-    if  !r_match.nil? && !f_match.nil?
+    if !r_match.nil? && !f_match.nil?
       both_match += 1 
+      abort("#{r_match}") if r_match[1].nil?
       sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
       output.puts(">#{entry.definition}")
       output.puts(sub_seq)
