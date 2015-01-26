@@ -25,6 +25,14 @@ fm = File.open('forward_match_lengths', 'w')
 rm = File.open('reverse_match_lengths', 'w')
 output = File.open('primers_trimmed.fasta', 'w')
 Bio::FlatFile.auto(ARGV[0]) do |ff|
+  db_class = ''
+  if Regexp.new('Fasta').match(f.dbclass.to_s)
+    db_class = 'fasta'
+  elsif Regexp.new('Fastq').match(f.dbclass.to_s)
+    db_class = 'fastq'
+  else 
+    abort("I don't recognize this kind of file")
+  end
   ff.each do |entry|
     seq = entry.naseq
     total_seqs += 1
@@ -32,12 +40,25 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
     r_match = brain_r_re.match(seq)
     forward_match += 1 if !f_match.nil? 
     reverse_match += 1 if !r_match.nil? 
-    if !r_match.nil? && !f_match.nil?
-      both_match += 1 
-      abort("#{r_match}") if r_match[1].nil?
-      sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
-      output.puts(">#{entry.definition}")
-      output.puts(sub_seq)
+    if db_class == 'fasta'
+      if !r_match.nil? && !f_match.nil?
+        both_match += 1 
+        abort("#{r_match}") if r_match[1].nil?
+        sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+        output.puts(">#{entry.definition}")
+        output.puts(sub_seq)
+      end
+    else
+      if !r_match.nil? && !f_match.nil?
+        both_match += 1
+        abort("#{r_match}") if r_match[1].nil?
+        sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+        sub_qual = entry.quality_string.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+        output.write('@' + header + "\n")
+        output.write(sub_seq)
+        output.write("\n+\n")
+        output.write(sub_qual + "\n")
+      end
     end
 
 
