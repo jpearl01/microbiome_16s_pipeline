@@ -19,7 +19,7 @@ reverse_match = 0
 both_match = 0
 
 puts "Ambiguous forward primer base regex #{f_re}"
-puts "Ambiguous reverse primer base regex #{f_re}"
+puts "Ambiguous reverse primer base regex #{brain_r_re}"
 
 fm = File.open('forward_match_lengths', 'w')
 rm = File.open('reverse_match_lengths', 'w')
