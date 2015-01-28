@@ -3,7 +3,7 @@
 require 'bio'
 
 #Program uses bioruby to match degenerate primers
-#Usage: ruby match_primers.rb input.fastq
+#Usage: ruby match_primers.rb input.fastq output_file
 
 
 #Forward Primers
@@ -23,7 +23,7 @@ puts "Ambiguous reverse primer base regex #{brain_r_re}"
 
 fm = File.open('forward_match_lengths', 'w')
 rm = File.open('reverse_match_lengths', 'w')
-output = File.open('primers_trimmed.fasta', 'w')
+output = File.open(ARGV[1], 'w')
 Bio::FlatFile.auto(ARGV[0]) do |ff|
   db_class = ''
   if Regexp.new('Fasta').match(ff.dbclass.to_s)
