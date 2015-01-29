@@ -45,18 +45,20 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
         both_match += 1 
         abort("#{r_match}") if r_match[1].nil?
         sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+        cap_sub_seq = sub_seq.swapcase
         output.puts(">#{entry.definition}")
-        output.puts(sub_seq.to_upper)
+        output.puts(cap_sub_seq)
       end
     else
       if !r_match.nil? && !f_match.nil?
         both_match += 1
 
         sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
+        cap_sub_seq = sub_seq.swapcase
         end_qual = seq.length - r_match[1].length - 1
         sub_qual = entry.quality_string[f_match[1].length .. end_qual ]
         output.write('@' + entry.definition + "\n")
-        output.write(sub_seq.to_upper)
+        output.write(cap_sub_seq)
         output.write("\n+\n")
         output.write(sub_qual + "\n")
       end
