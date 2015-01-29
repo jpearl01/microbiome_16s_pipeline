@@ -51,9 +51,9 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
     else
       if !r_match.nil? && !f_match.nil?
         both_match += 1
-        abort("#{r_match}") if r_match[1].nil?
+
         sub_seq = seq.subseq(f_match[1].length + 1, seq.length - r_match[1].length)
-        sub_qual = entry.quality_string[f_match[1].length, seq.length - r_match[1].length + 1 ]
+        sub_qual = entry.quality_string[f_match[1].length, seq.length - r_match[1].length - 1 ]
         output.write('@' + entry.definition + "\n")
         output.write(sub_seq)
         output.write("\n+\n")
