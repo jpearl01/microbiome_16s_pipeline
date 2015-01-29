@@ -56,7 +56,7 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
         end_qual = seq.length - r_match[1].length - 1
         sub_qual = entry.quality_string[f_match[1].length .. end_qual ]
         output.write('@' + entry.definition + "\n")
-        output.write(sub_seq)
+        output.write(sub_seq.to_upper)
         output.write("\n+\n")
         output.write(sub_qual + "\n")
       end
