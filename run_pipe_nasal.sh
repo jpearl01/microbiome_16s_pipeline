@@ -2,6 +2,11 @@
 #modify the labels to only include the barcode, which we don't know :-/
 #perl -pi.bak -e 's/>.+/>barcodelabel=undetermined\;PC_$./' barcode_label.fasta
 
+if [ $# -ne 4 ]; then
+    echo "Must have 4 arguments to run this script, fastq_file sample_name ee trunc_len"
+    exit 0
+fi
+
 fastq_file=$1
 echo -e "Fastq file:"'\t'$fastq_file
 samp_name=$2
@@ -29,7 +34,7 @@ to_plot="data_to_plot.dat"
 #-relabel barcodelabel=${samp_name}\;${samp_name}_ -eeout -fastq_trunclen $trunc_len 
 
 #need this if starting from fastq
-usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee -fastq_trunclen $trunc_len 
+#usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee -fastq_trunclen $trunc_len 
 
 #-minuniquesize 2
 #usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout 
