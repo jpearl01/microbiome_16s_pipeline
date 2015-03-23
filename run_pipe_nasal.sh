@@ -29,7 +29,7 @@ to_plot="data_to_plot.dat"
 #-relabel barcodelabel=${samp_name}\;${samp_name}_ -eeout -fastq_trunclen $trunc_len 
 
 #need this if starting from fastq
-#usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee -fastq_trunclen $trunc_len 
+usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee -fastq_trunclen $trunc_len 
 
 #-minuniquesize 2
 #usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout 

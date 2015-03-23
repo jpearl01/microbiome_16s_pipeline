@@ -3,7 +3,7 @@ require 'bio'
 
 #Usage: ruby generate_stats.rb 
 
-abort("Can't open the sample pool file! (should be 'sample_key.txt')") unless File.exists?("sample_key.txt")
+abort("Can't open the sample pool file! (should be 'sample_key_2.txt')") unless File.exists?("sample_key_2.txt")
 
 
 class Barcode_16s_record
@@ -15,7 +15,7 @@ end
 pb_projects = {}
 
 
-File.foreach("sample_key.txt") do |entry|
+File.foreach("sample_key_2.txt") do |entry|
 	next if $. == 1
 	arr = entry.split
 	pb_projects[arr.last] = [] unless pb_projects.has_key?(arr.last)
