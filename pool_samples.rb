@@ -2,7 +2,7 @@
 
 #Usage: ruby pool_samples.rb expected_error truncation_length
 
-abort("Can't open the sample pool file!") unless File.exists?("sample_key.txt")
+abort("Can't open the sample pool file!") unless File.exists?("sample_key_2.txt")
 
 
 class Barcode_16s_record
