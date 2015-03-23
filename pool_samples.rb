@@ -44,7 +44,7 @@ pb_projects.each do |id, samps|
 			bc = "barcodelabel=#{base_name}\\;#{rec.site_id}_#{rec.patient}_"
 			if rec.barcode_num.to_i == 1
 				if File.exists?("0001_Forward--0002_Forward.fastq")
-					`./fix_rev_comp_16s.rb 0001_Forward--0002_Forward.fastq corrected.fq`
+					`fix_rev_comp_16s.rb 0001_Forward--0002_Forward.fastq corrected.fq`
 					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
 					`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
 					File.delete("0001_Forward--0002_Forward.fastq")
@@ -53,7 +53,7 @@ pb_projects.each do |id, samps|
 				end
 			elsif rec.barcode_num.to_i == 2
 				if File.exists?("0003_Forward--0004_Forward.fastq")
-					`./fix_rev_comp_16s.rb 0003_Forward--0004_Forward.fastq corrected.fq`
+					`fix_rev_comp_16s.rb 0003_Forward--0004_Forward.fastq corrected.fq`
 					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
 				  `usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
 					File.delete("0003_Forward--0004_Forward.fastq")
@@ -62,7 +62,7 @@ pb_projects.each do |id, samps|
 				end
 			elsif rec.barcode_num.to_i == 3
 				if File.exists?("0005_Forward--0006_Forward.fastq")
-					`./fix_rev_comp_16s.rb 0005_Forward--0006_Forward.fastq corrected.fq`
+					`fix_rev_comp_16s.rb 0005_Forward--0006_Forward.fastq corrected.fq`
 					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
  					`usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
 					File.delete("0005_Forward--0006_Forward.fastq")
@@ -71,7 +71,7 @@ pb_projects.each do |id, samps|
 				end
 			elsif rec.barcode_num.to_i == 4
 				if File.exists?("0007_Forward--0008_Forward.fastq")
-					`./fix_rev_comp_16s.rb 0007_Forward--0008_Forward.fastq corrected.fq`
+					`fix_rev_comp_16s.rb 0007_Forward--0008_Forward.fastq corrected.fq`
 					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
  					`usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
 					File.delete("0007_Forward--0008_Forward.fastq")
