@@ -48,7 +48,7 @@ pb_projects.each do |id, samps|
 			if rec.barcode_num.to_i == 1
 				if File.exists?("0001_Forward--0002_Forward.fastq")
 					before = Bio::FlatFile.open(Bio::Fastq, "0001_Forward--0002_Forward.fastq").count
-					`./fix_rev_comp_16s.rb 0001_Forward--0002_Forward.fastq #{base_name}.fq #{bc}`
+					`fix_rev_comp_16s.rb 0001_Forward--0002_Forward.fastq #{base_name}.fq #{bc}`
 					after = Bio::FlatFile.open(Bio::Fastq, "#{base_name}.fq").count if File.exists?("#{base_name}.fq")
 					File.delete("0001_Forward--0002_Forward.fastq")
 				else
@@ -57,7 +57,7 @@ pb_projects.each do |id, samps|
 			elsif rec.barcode_num.to_i == 2
 				if File.exists?("0003_Forward--0004_Forward.fastq")
 					before = Bio::FlatFile.open(Bio::Fastq, "0003_Forward--0004_Forward.fastq").count
-					`./fix_rev_comp_16s.rb 0003_Forward--0004_Forward.fastq #{base_name}.fq #{bc}`
+					`fix_rev_comp_16s.rb 0003_Forward--0004_Forward.fastq #{base_name}.fq #{bc}`
 					File.delete("0003_Forward--0004_Forward.fastq")
 					after = Bio::FlatFile.open(Bio::Fastq, "#{base_name}.fq").count if File.exists?("#{base_name}.fq")
 				else
@@ -66,7 +66,7 @@ pb_projects.each do |id, samps|
 			elsif rec.barcode_num.to_i == 3
 				if File.exists?("0005_Forward--0006_Forward.fastq")
 					before = Bio::FlatFile.open(Bio::Fastq, "0005_Forward--0006_Forward.fastq").count
-					`./fix_rev_comp_16s.rb 0005_Forward--0006_Forward.fastq #{base_name}.fq #{bc}`
+					`fix_rev_comp_16s.rb 0005_Forward--0006_Forward.fastq #{base_name}.fq #{bc}`
 					File.delete("0005_Forward--0006_Forward.fastq")
 					after = Bio::FlatFile.open(Bio::Fastq, "#{base_name}.fq").count if File.exists?("#{base_name}.fq")
 				else
@@ -75,7 +75,7 @@ pb_projects.each do |id, samps|
 			elsif rec.barcode_num.to_i == 4
 				if File.exists?("0007_Forward--0008_Forward.fastq")
 					before = Bio::FlatFile.open(Bio::Fastq, "0007_Forward--0008_Forward.fastq").count
-					`./fix_rev_comp_16s.rb 0007_Forward--0008_Forward.fastq #{base_name}.fq #{bc}`
+					`fix_rev_comp_16s.rb 0007_Forward--0008_Forward.fastq #{base_name}.fq #{bc}`
 					File.delete("0007_Forward--0008_Forward.fastq")
 					after = Bio::FlatFile.open(Bio::Fastq, "#{base_name}.fq").count if File.exists?("#{base_name}.fq")
 				else
