@@ -14,7 +14,7 @@ end
 pb_projects = {}
 
 
-File.foreach("sample_key.txt") do |entry|
+File.foreach("sample_key_2.txt") do |entry|
 	next if $. == 1
 	arr = entry.split
 	pb_projects[arr.last] = [] unless pb_projects.has_key?(arr.last)
