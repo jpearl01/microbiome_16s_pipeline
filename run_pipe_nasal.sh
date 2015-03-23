@@ -38,13 +38,13 @@ to_plot="data_to_plot.dat"
 
 #-minuniquesize 2
 #usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout 
-usearch8 -derep_fulllength $fastq_file -fastaout derep.fasta -sizeout 
-usearch8 -sortbysize derep.fasta -fastaout sorted.fasta
-usearch8 -cluster_otus sorted.fasta -minsize 2 -otus old_otus.fasta -uparseout uparseout
+usearch -derep_fulllength $fastq_file -fastaout derep.fasta -sizeout 
+usearch -sortbysize derep.fasta -fastaout sorted.fasta
+usearch -cluster_otus sorted.fasta -minsize 2 -otus old_otus.fasta -uparseout uparseout
 fasta_number.py old_otus.fasta OTU_ > otus.fasta
-usearch8 -usearch_global $fastq_file -db otus.fasta -strand plus -id 0.90 -uc readmap
+usearch -usearch_global $fastq_file -db otus.fasta -strand plus -id 0.90 -uc readmap
 python ~/external_bio_programs/usearch/uc2otutab.py readmap > table
 #Remember to change the taxconfs if not using fl (full length) sequences
-usearch8 -utax otus.fasta -db ~/Documents/rdp_16s_8.udb -taxconfs ~/Documents/rdp_16s_fl.tc -tt ~/Documents/rdp_16s.tt -utaxout utax
+usearch -utax otus.fasta -db ~/Documents/rdp_16s_8.udb -taxconfs ~/Documents/rdp_16s_fl.tc -tt ~/Documents/rdp_16s.tt -utaxout utax
 sort_and_filter_table.rb utax table
 gnuplot -e "filename='data_to_plot.dat'" ~/bin/plot.sh
