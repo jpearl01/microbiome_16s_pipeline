@@ -80,12 +80,13 @@ row_to_collapse.keys.each do |genus|
   row_to_collapse[genus].each do |o|
     if total_vector.nil?
       total_vector = vec[final_patient_samp['OTUId'].index(o)-1].map(&:to_i)
-#      puts vec[final_patient_samp['OTUId'].index(o)-1]
+      puts vec[final_patient_samp['OTUId'].index(o)-1]
     else
       total_vector = total_vector + vec[final_patient_samp['OTUId'].index(o)-1].map(&:to_i)
     end
     
   end
+  abort
   puts genus + " " + total_vector.to_a.join(" ")
 end
 #puts Matrix.columns(final_patient_samp.values)
