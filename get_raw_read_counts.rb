@@ -44,7 +44,7 @@ pb_projects.each do |id, samps|
 	puts curr_file
 	abort("Yo, the file doesn't exist") if !File.exists?(curr_file)
 	if File.exists?(curr_file)
-	
+		curr_file = File.read(curr_file)
 		barcodes = JSON.parse(curr_file)
 		puts barcodes.to_yaml
 
