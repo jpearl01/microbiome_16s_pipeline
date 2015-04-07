@@ -67,6 +67,7 @@ pb_projects.each do |id, samps|
 			end
 		elsif rec.barcode_num.to_i == 2
 			barcode_name = '0003_Forward--0004_Forward'
+			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 			if bc_ind.nil?
 				reads = 0
 			else
@@ -74,6 +75,7 @@ pb_projects.each do |id, samps|
 			end
 		elsif rec.barcode_num.to_i == 3
 			barcode_name = '0005_Forward--0006_Forward'
+			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 			if bc_ind.nil?
 				reads = 0
 			else
@@ -81,6 +83,7 @@ pb_projects.each do |id, samps|
 			end
 		elsif rec.barcode_num.to_i == 4
 			barcode_name = '0007_Forward--0008_Forward'
+			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 			if bc_ind.nil?
 				reads = 0
 			else
