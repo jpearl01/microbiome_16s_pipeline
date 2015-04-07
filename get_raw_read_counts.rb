@@ -45,7 +45,7 @@ pb_projects.each do |id, samps|
 	if File.exists?(curr_file)
 		curr_file = File.read(curr_file)
 		barcodes = JSON.parse(curr_file)
-		puts barcodes.tables.columns
+
 
 		samps.each do |rec|
 
