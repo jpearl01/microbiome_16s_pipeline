@@ -55,7 +55,8 @@ pb_projects.each do |id, samps|
 
 	barcodes = JSON.parse(File.read(curr_file))
 	samps.each do |rec|
-
+		ind = nil
+		reads = nil
 		if rec.barcode_num.to_i == 1
 			barcode_name = '0001_Forward--0002_Forward'
 			if barcodes["tables"][0]['columns'][0]['values'].index(barcode_name).nil?
@@ -64,7 +65,6 @@ pb_projects.each do |id, samps|
 				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 			end
-			puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 		elsif rec.barcode_num.to_i == 2
 			barcode_name = '0003_Forward--0004_Forward'
 			if barcodes["tables"][0]['columns'][0]['values'].index(barcode_name).nil?
@@ -73,7 +73,6 @@ pb_projects.each do |id, samps|
 				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 			end
-			puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 		elsif rec.barcode_num.to_i == 3
 			barcode_name = '0005_Forward--0006_Forward'
 
@@ -83,7 +82,6 @@ pb_projects.each do |id, samps|
 				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 			end
-			puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 		elsif rec.barcode_num.to_i == 4
 			barcode_name = '0007_Forward--0008_Forward'
 			if barcodes["tables"][0]['columns'][0]['values'].index(barcode_name).nil?
@@ -92,7 +90,7 @@ pb_projects.each do |id, samps|
 				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 			end
-			puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
 		end
+		puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
 	end
 end
