@@ -57,39 +57,23 @@ pb_projects.each do |id, samps|
 	samps.each do |rec|
 		ind = nil
 		reads = nil
+		barcode_name = ''
 		if rec.barcode_num.to_i == 1
 			barcode_name = '0001_Forward--0002_Forward'
-			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
-			if bc_ind.nil?
-				reads = 0
-			else
-				reads = barcodes["tables"][0]['columns'][1]['values'][bc_ind]
-			end
 		elsif rec.barcode_num.to_i == 2
 			barcode_name = '0003_Forward--0004_Forward'
-			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
-			if bc_ind.nil?
-				reads = 0
-			else
-				reads = barcodes["tables"][0]['columns'][1]['values'][bc_ind]
-			end
 		elsif rec.barcode_num.to_i == 3
 			barcode_name = '0005_Forward--0006_Forward'
-			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
-			if bc_ind.nil?
-				reads = 0
-			else
-				reads = barcodes["tables"][0]['columns'][1]['values'][bc_ind]
-			end
 		elsif rec.barcode_num.to_i == 4
 			barcode_name = '0007_Forward--0008_Forward'
-			bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
-			if bc_ind.nil?
-				reads = 0
-			else
-				reads = barcodes["tables"][0]['columns'][1]['values'][bc_ind]
-			end
 		end
+		
+		if bc_ind.nil?
+			reads = 0
+		else
+			reads = barcodes["tables"][0]['columns'][1]['values'][bc_ind]
+		end
+		
 		puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{rec.barcode_num}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
 	end
 end
