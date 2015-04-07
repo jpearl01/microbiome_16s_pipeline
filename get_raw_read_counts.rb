@@ -91,6 +91,6 @@ pb_projects.each do |id, samps|
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 			end
 		end
-		puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
+		puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{rec.barcode_num}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
 	end
 end
