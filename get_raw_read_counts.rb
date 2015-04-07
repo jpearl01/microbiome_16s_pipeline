@@ -68,12 +68,13 @@ pb_projects.each do |id, samps|
 			barcode_name = '0007_Forward--0008_Forward'
 		end
 		
+		bc_ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
+
 		if bc_ind.nil?
 			reads = 0
 		else
 			reads = barcodes["tables"][0]['columns'][1]['values'][bc_ind]
 		end
-		
 		puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{rec.barcode_num}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
 	end
 end
