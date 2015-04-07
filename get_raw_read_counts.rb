@@ -44,7 +44,14 @@ pb_projects.each do |id, samps|
 	abort("Can't open the master log file: #{m_log}") unless File.exists?(m_log)
 
 	log.puts("The current file is: " + curr_file)
-
+	time_started = ''
+	date_started = ''
+	#Just want to read the first line of the log file and grab the date and time this was started
+	File.open(m_log) {
+		|f| arr = f.readline.split
+		date_started = arr[1]
+		time_started = arr[2].split(',')[0]
+	}
 
 	barcodes = JSON.parse(File.read(curr_file))
 	samps.each do |rec|
@@ -85,7 +92,7 @@ pb_projects.each do |id, samps|
 				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 			end
-			puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
+			puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}\t#{time_started}\t#{date_started}"
 		end
 	end
 end
