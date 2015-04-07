@@ -42,7 +42,6 @@ pb_projects.each do |id, samps|
 	log.puts("The current file is: " + curr_file)
 
 	puts curr_file
-	abort("Yo, the file doesn't exist") if !File.exists?(curr_file)
 	if File.exists?(curr_file)
 		curr_file = File.read(curr_file)
 		barcodes = JSON.parse(curr_file)
@@ -51,11 +50,28 @@ pb_projects.each do |id, samps|
 		samps.each do |rec|
 
 			if rec.barcode_num.to_i == 1
-				puts "#{rec.site_id}\t#{rec.patient}"
+				barcode_name = '0001_Forward--0002_Forward'
+				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
+				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
+				puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 			elsif rec.barcode_num.to_i == 2
+				barcode_name = '0003_Forward--0004_Forward'
+				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
+				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
+				puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 			elsif rec.barcode_num.to_i == 3
+				barcode_name = '0005_Forward--0006_Forward'
+				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
+				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
+				puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 			elsif rec.barcode_num.to_i == 4
+				barcode_name = '0007_Forward--0008_Forward'
+				ind = barcodes["tables"][0]['columns'][0]['values'].index(barcode_name)
+				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
+				puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 			end
+		else
+			abort("Yo, the file: #{curr_file} doesn't exist")
 		end
 	end
 end
