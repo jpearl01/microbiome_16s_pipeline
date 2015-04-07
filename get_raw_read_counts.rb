@@ -70,8 +70,8 @@ pb_projects.each do |id, samps|
 				reads = barcodes["tables"][0]['columns'][1]['values'][ind]
 				puts "#{id}\t#{rec.site_id}\t#{rec.patient}\t#{barcode_name}\t#{reads}"
 			end
-		else
-			abort("Yo, the file: #{curr_file} doesn't exist")
 		end
+	else
+		abort("Yo, the file: #{curr_file} doesn't exist")
 	end
-end
+	end
