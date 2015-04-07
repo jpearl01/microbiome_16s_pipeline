@@ -36,54 +36,34 @@ pb_projects.each do |id, samps|
 
 	curr_file = "/data/pacbio/smrtanalysis_userdata/jobs/016/0" + id + "/data/barcoded-fastqs.tgz"
 	log.puts("The current file is: " + curr_file)
-	if File.exists?(curr_file)
-		`tar xvf #{curr_file}`
-		samps.each do |rec|
-			log.puts("Pool: #{rec.pool} Barcode: #{rec.barcode_num}")
-			base_name = "#{rec.pool}_#{rec.barcode_num}_#{rec.site_id}_#{rec.patient}"
-			bc = "barcodelabel=#{base_name}\\;#{rec.site_id}_#{rec.patient}_"
-			if rec.barcode_num.to_i == 1
-				if File.exists?("0001_Forward--0002_Forward.fastq")
-					`fix_rev_comp_16s.rb 0001_Forward--0002_Forward.fastq corrected.fq`
-					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
-					`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
-					File.delete("0001_Forward--0002_Forward.fastq")
-				else
-					log.puts("No file for sample #{id} barcode #{rec.barcode_num}")
-				end
-			elsif rec.barcode_num.to_i == 2
-				if File.exists?("0003_Forward--0004_Forward.fastq")
-					`fix_rev_comp_16s.rb 0003_Forward--0004_Forward.fastq corrected.fq`
-					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
-				  `usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
-					File.delete("0003_Forward--0004_Forward.fastq")
-				else
-					log.puts("No file for sample #{id} barcode #{rec.barcode_num}")
-				end
-			elsif rec.barcode_num.to_i == 3
-				if File.exists?("0005_Forward--0006_Forward.fastq")
-					`fix_rev_comp_16s.rb 0005_Forward--0006_Forward.fastq corrected.fq`
-					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
- 					`usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
-					File.delete("0005_Forward--0006_Forward.fastq")
-				else
-					log.puts("No file for sample #{id} barcode #{rec.barcode_num}")
-				end
-			elsif rec.barcode_num.to_i == 4
-				if File.exists?("0007_Forward--0008_Forward.fastq")
-					`fix_rev_comp_16s.rb 0007_Forward--0008_Forward.fastq corrected.fq`
-					log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}")
- 					`usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} -fastq_trunclen #{ARGV[1]}`
-					File.delete("0007_Forward--0008_Forward.fastq")
-				else
-					log.puts("No file for sample #{id} barcode #{rec.barcode_num}")
-				end
-			end
+	abort("The file #{curr_file} does not exist!") if !File.exists?(curr_file)
+	`tar xvf #{curr_file}`
+	samps.each do |rec|
 
-					
+		log.puts("Pool: #{rec.pool} Barcode: #{rec.barcode_num}")
+		base_name = "#{rec.pool}_#{rec.barcode_num}_#{rec.site_id}_#{rec.patient}"
+		bc = "barcodelabel=#{base_name}\\;#{rec.site_id}_#{rec.patient}_"
+		fq = ''
+
+		if rec.barcode_num.to_i == 1
+			fq = '0001_Forward--0002_Forward.fastq'
+		elsif rec.barcode_num.to_i == 2
+			fq = "0003_Forward--0004_Forward.fastq"
+		elsif rec.barcode_num.to_i == 3
+			fq = "0005_Forward--0006_Forward.fastq"
+		elsif rec.barcode_num.to_i == 4
+			fq = "0007_Forward--0008_Forward.fastq"
+		end
+
+		if File.exists?(fq)
+			`fix_rev_comp_16s.rb #{fq} corrected.fq`
+			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]}")
+			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
+			File.delete(fq)
+		else
+			log.puts("No file for sample #{id} barcode #{rec.barcode_num}")
 		end
 	end
-
 end
 
 File.delete('corrected.fq')
