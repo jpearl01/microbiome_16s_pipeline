@@ -58,6 +58,7 @@ pb_projects.each do |id, samps|
 		end
 
 		if File.exists?(fq)
+			$stderr.puts(fq)
 			`fix_rev_comp_16s.rb #{fq} corrected.fq`
 			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]}")
 			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
