@@ -40,9 +40,9 @@ to_plot="data_to_plot.dat"
 #usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout 
 usearch -derep_fulllength $fastq_file -fastaout derep.fasta -sizeout 
 usearch -sortbysize derep.fasta -fastaout sorted.fasta
-usearch -cluster_otus sorted.fasta -minsize 2 -otus old_otus.fasta -uparseout uparseout
+usearch -cluster_otus sorted.fasta -otus old_otus.fasta -uparseout uparseout
 fasta_number.py old_otus.fasta OTU_ > otus.fasta
-usearch -usearch_global $fastq_file -db otus.fasta -strand both -id 0.90 -uc readmap
+usearch -usearch_global $fastq_file -db otus.fasta -strand both -id 0.97 -uc readmap
 python ~/bin/uc2otutab.py readmap > table
 #Remember to change the taxconfs if not using fl (full length) sequences
 usearch -utax otus.fasta -db ~/Documents/rdp_16s_8.udb -taxconfs ~/Documents/rdp_16s_fl.tc -tt ~/Documents/rdp_16s.tt -utaxout utax
