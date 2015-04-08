@@ -42,6 +42,3 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
 		count += 1
 	end
 end
-before = `grep '>' #{ARGV[0]} |wc -l`
-after = `grep '>' #{ARGV[1]} |wc -l`
-puts "#{ARGV[1]}\t#{before}\t#{after}"
