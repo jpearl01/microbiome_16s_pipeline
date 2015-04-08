@@ -59,12 +59,14 @@ pb_projects.each do |id, samps|
 
 		if File.exists?(fq)
 			$stderr.puts(base_name)
+			before = `grep '>' #{fq} |wc -l`
 			`fix_rev_comp_16s.rb #{fq} corrected.fq`
+			after = `grep '>' corrected.fq |wc -l`
+			puts "#{base_name}\t#{before}\t#{after}"
+
 			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]}")
 			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
-			before = `grep '>' #{fq} |wc -l`
-			after = `grep '>' corrected.fq |wc -l`
-			puts "#{ARGV[1]}\t#{before}\t#{after}"
+
 			File.delete(fq)
 		else
 			log.puts("No file for sample #{id} barcode #{rec.barcode_num}")
