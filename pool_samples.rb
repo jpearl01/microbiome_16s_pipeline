@@ -4,6 +4,8 @@
 
 abort("Can't open the sample pool file!") unless File.exists?("sample_key_2.txt")
 
+#Lets store stdout to a log file
+$stdout.reopen('16s_before_after.log', 'w')
 
 class Barcode_16s_record
 
@@ -69,5 +71,5 @@ end
 File.delete('corrected.fq')
 
 `mkdir -p all_seqs` unless Dir.exists?('all_seqs')
-`cat *.fasta > all_seqs/all_#{ARGV[0]}_1400.fasta`
-`cat *.fastq > all_seqs/all_#{ARGV[0]}_1400.fastq`
+`cat *.fasta > all_seqs/all_ee#{ARGV[0]}.fasta`
+`cat *.fastq > all_seqs/all_ee#{ARGV[0]}.fastq`

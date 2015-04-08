@@ -6,7 +6,6 @@ require 'bio'
 #usage: ./fix_rev_comp_16s.rb reads.fq out_reads.fq new_header_name
 	
 abort('Not a file!') unless File.exists?(ARGV[0])
-	
 strand_file = "strand_info"
 	
 `usearch -usearch_global #{ARGV[0]} -db ~/Documents/rdp_16s_8.udb -id 0.8 -strand both -userout #{strand_file} -userfields query+qstrand`
@@ -43,3 +42,6 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
 		count += 1
 	end
 end
+before = `grep '>' #{ARGV[0]} |wc -l`
+after = `grep '>' #{ARGV[1]} |wc -l`
+puts "#{ARGV[1]}\t#{before}\t#{after}"
