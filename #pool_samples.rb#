@@ -51,7 +51,22 @@ pb_projects.each do |id, samps|
 			fq = '0001_Forward--0002_Forward.fastq'
 		elsif rec.barcode_num.to_i == 2
 			fq = "0003_Forward--0004_Forward.fastq"
-		elsif rec.barcode_num.to_i == 3
+['
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]'
+]]]]]]]		elsif rec.barcode_num.to_i == 3
 			fq = "0005_Forward--0006_Forward.fastq"
 		elsif rec.barcode_num.to_i == 4
 			fq = "0007_Forward--0008_Forward.fastq"
@@ -60,16 +75,16 @@ pb_projects.each do |id, samps|
 		if File.exists?(fq)
 			$stderr.puts(base_name)
 =begin
-			before = `grep -c '>' #{fq}`
+			before = `grep '>' #{fq} |wc -l`
 			`fix_rev_comp_16s.rb #{fq} corrected.fq`
-			after = `grep -d '>' corrected.fq`
+			after = `grep '>' corrected.fq |wc -l`
 			puts "#{base_name}\t#{before.strip}\t#{after.strip}"
 
 
 			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]}")
 			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
 =end
-      `usearch -fastq_filter #{fq} -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
+                  `usearch -fastq_filter #{fq} -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
                   
 
 			File.delete(fq)
