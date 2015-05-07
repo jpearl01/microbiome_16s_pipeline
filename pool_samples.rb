@@ -2,6 +2,9 @@
 
 #Usage: ruby pool_samples.rb expected_error truncation_length
 
+require 'bio'
+
+
 abort("Can't open the sample pool file!") unless File.exists?("sample_key_2.txt")
 
 #Lets store stdout to a log file
@@ -11,6 +14,13 @@ class Barcode_16s_record
 
 	attr_accessor :pool, :barcode_num, :site_id, :patient, :sample
 
+end
+
+def write_to_fastq (fh, header, sequence, quality)
+	fh.write('@' + header + "\n")
+	fh.write(sequence)
+	fh.write("\n+\n")
+	fh.write(quality + "\n")
 end
 
 pb_projects = {}
@@ -44,7 +54,7 @@ pb_projects.each do |id, samps|
 
 		log.puts("Pool: #{rec.pool} Barcode: #{rec.barcode_num}")
 		base_name = "#{rec.pool}_#{rec.barcode_num}_#{rec.site_id}_#{rec.patient}"
-		bc = "barcodelabel=#{base_name}\\;#{rec.site_id}_#{rec.patient}_"
+		bc = "barcodelabel=#{base_name}\;"
 		fq = ''
 
 		if rec.barcode_num.to_i == 1
@@ -69,7 +79,19 @@ pb_projects.each do |id, samps|
 			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]}")
 			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
 =end
-      `usearch -fastq_filter #{fq} -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
+			
+			#Add in the barcode to the fastq header
+			corrected = File.open('corrected.fq', 'w')
+			fh = Bio::FlatFile.auto(fq)
+			fh.each do |entry|
+				new_header = entry.definition.split[0]
+				new_header = new_header + ";" + bc
+				write_to_fastq(corrected, "#{new_header}", entry.naseq.upcase, entry.quality_string)
+			end
+			corrected.puts ""
+			corrected.close
+			#Remember to include the '-threads 1' to account for the non-unique id relabelling bug
+      `usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -fastq_maxee #{ARGV[0]} -eeout `
                   
 
 			File.delete(fq)
@@ -79,8 +101,8 @@ pb_projects.each do |id, samps|
 	end
 end
 
-#File.delete('corrected.fq')
+File.delete('corrected.fq')
 
-`mkdir -p all_seqs` unless Dir.exists?('all_seqs')
-`cat *.fasta > all_seqs/all_ee#{ARGV[0]}.fasta`
-`cat *.fastq > all_seqs/all_ee#{ARGV[0]}.fastq`
+`mkdir -p ee#{ARGV[0]}` unless Dir.exists?("ee#{ARGV[0]}")
+`cat *.fasta > ee#{ARGV[0]}/all_ee#{ARGV[0]}.fasta`
+`cat *.fastq > ee#{ARGV[0]}/all_ee#{ARGV[0]}.fastq`
