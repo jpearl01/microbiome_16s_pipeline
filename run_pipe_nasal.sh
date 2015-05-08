@@ -40,9 +40,9 @@ to_plot="data_to_plot.dat"
 #usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout 
 usearch -derep_fulllength $fastq_file -fastaout derep.fasta -sizeout 
 usearch -sortbysize derep.fasta -fastaout sorted.fasta
-usearch -cluster_otus sorted.fasta -otus old_otus.fasta -uparseout uparseout
-fasta_number.py old_otus.fasta OTU_ > otus.fasta
-usearch -usearch_global $fastq_file -db otus.fasta -strand both -uc readmap
+usearch -cluster_otus sorted.fasta -otus old_otus.fasta -uparseout uparseout -sizeout -sizein
+python ~/bin/fasta_number.py old_otus.fasta OTU_ > otus.fasta
+usearch -usearch_global $fastq_file -db otus.fasta -strand both -uc readmap -id .97
 python ~/bin/uc2otutab.py readmap > table
 #Remember to change the taxconfs if not using fl (full length) sequences also chaned the database to use greengenes, hopefully species level assignment
 #I don't have the tt and tc files for the greengenes database and therefore can't get a species level assignment

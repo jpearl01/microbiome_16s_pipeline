@@ -8,7 +8,7 @@ require 'bio'
 abort('Not a file!') unless File.exists?(ARGV[0])
 strand_file = "strand_info"
 	
-`usearch -usearch_global #{ARGV[0]} -db ~/Documents/rdp_16s_8.udb -id 0.8 -strand both -userout #{strand_file} -userfields query+qstrand`
+`usearch -usearch_global #{ARGV[0]} -db ~/Documents/rdp_16s_64bit.udb -id 0.8 -strand both -userout #{strand_file} -userfields query+qstrand`
 	
 strand_hash = Hash[*File.read(strand_file).split]
 
