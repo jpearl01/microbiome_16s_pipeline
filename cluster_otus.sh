@@ -25,17 +25,18 @@ table=${samp_name}_ee${ee}_tunc${trunc_len}.table
 utax=${samp_name}_ee${ee}_tunc${trunc_len}_utax.results
 to_plot="data_to_plot.dat"
 
-usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee -fastq_trunclen $trunc_len -relabel barcodelabel=${samp_name}\;${samp_name}_ -eeout
-usearch -derep_fulllength $fasta_reads -output $derep_fasta -sizeout -minseqlength 400
-usearch -sortbysize $derep_fasta -output $sorted -minsize 2
+# -fastq_trunclen $trunc_len -relabel barcodelabel=${samp_name}\;${samp_name}_ -eeout
+usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee
+usearch -derep_fulllength $fasta_reads -fastaout $derep_fasta -sizeout 
+usearch -sortbysize $derep_fasta -fastaout $sorted -minsize 2
 
 usearch -cluster_otus $sorted -otus $otus
-python ~/programs/usearch/fasta_number.py $otus OTU_ > $named
-usearch -usearch_global $fasta_reads -db $named -strand plus -id 0.97 -uc $readmap
-python ~/programs/usearch/uc2otutab.py $readmap > $table
-usearch8 -utax $named -db ~/Documents/rdp_16s.fa -strand plus -utax_rawscore -tt ~/Documents/rdp_16s.tt -utaxout $utax
+python ~/external_bio_programs/usearch/fasta_number.py $otus OTU_ > $named
+usearch -usearch_global $fasta_reads -strand both -db $named -id 0.97 -uc $readmap
+python ~/external_bio_programs/usearch/uc2otutab.py $readmap > $table
+usearch -utax $named -db ~/Documents/rdp_16s.fa -utax_rawscore -tt ~/Documents/rdp_16s.tt -utaxout $utax
 #create a sorted file for the plot function
 #grep 'OTUId' $table > ${to_plot}
 #grep -v 'OTUId' $table | sort -n -k2 >> ${to_plot}
-/home/josh/workspace/ruby/microbiome_16s_pipeline/sort_and_filter_table.rb $utax $table
-gnuplot -e "filename='${to_plot}'" /home/josh/workspace/ruby/microbiome_16s_pipeline/plot.sh
+~/workspace/bioruby/microbiome_16s_pipeline/sort_and_filter_table.rb $utax $table
+gnuplot -e "filename='${to_plot}'" ~/workspace/bioruby/microbiome_16s_pipeline/plot.sh

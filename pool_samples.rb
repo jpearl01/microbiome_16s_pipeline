@@ -5,7 +5,7 @@
 require 'bio'
 
 
-abort("Can't open the sample pool file!") unless File.exists?("sample_key_2.txt")
+abort("Can't open the sample pool file!") unless File.exists?("sample_key_3.txt")
 
 #Lets store stdout to a log file
 $stdout.reopen('16s_before_after.log', 'w')
@@ -26,7 +26,7 @@ end
 pb_projects = {}
 
 
-File.foreach("sample_key_2.txt") do |entry|
+File.foreach("sample_key_3.txt") do |entry|
 	next if $. == 1
 	arr = entry.split
 	pb_projects[arr.last] = [] unless pb_projects.has_key?(arr.last)
@@ -46,7 +46,8 @@ log = File.open('log.txt', 'w')
 
 pb_projects.each do |id, samps|
 
-	curr_file = "/data/pacbio/smrtanalysis_userdata/jobs/016/0" + id + "/data/barcoded-fastqs.tgz"
+	curr_file = "/data/pacbio/smrtanalysis_userdata/jobs/016/0" + id + "/data/barcoded-fastqs.tgz" if /^16/.match(id)
+	curr_file = "/data/pacbio/smrtanalysis_userdata/jobs/017/0" + id + "/data/barcoded-fastqs.tgz" if /^17/.match(id)
 	log.puts("The current file is: " + curr_file)
 	abort("The file #{curr_file} does not exist!") if !File.exists?(curr_file)
 	`tar xvf #{curr_file}`

@@ -27,6 +27,8 @@ puts "Ambiguous reverse primer base regex #{r_re}"
 
 fm = File.open('forward_match_lengths', 'w')
 rm = File.open('reverse_match_lengths', 'w')
+fnr = File.open('forward_not_reverse.fastq', 'w')
+rnf = File.open('reverse_not_forward.fastq', 'w')
 output = File.open(ARGV[1], 'w')
 
 def get_subsequence(f_match_len, r_match_len, seq)
@@ -34,12 +36,24 @@ def get_subsequence(f_match_len, r_match_len, seq)
   sub_seq.upcase
 end
 
+def write_fastq_entry(header, sequence, qual, fh)
+  fh.puts('@' + header)
+  fh.puts(sequence.upcase)
+  fh.puts("+")
+  fh.puts(qual)
+end
+
 Bio::FlatFile.auto(ARGV[0]) do |ff|
   db_class = ''
   if Regexp.new('Fasta').match(ff.dbclass.to_s)
     db_class = 'fasta'
+    fnr = File.open('forward_not_reverse.fasta', 'w')
+    rnf = File.open('reverse_not_forward.fasta', 'w')
+
   elsif Regexp.new('Fastq').match(ff.dbclass.to_s)
     db_class = 'fastq'
+    fnr = File.open('forward_not_reverse.fastq', 'w')
+    rnf = File.open('reverse_not_forward.fastq', 'w')
   else 
     abort("I don't recognize this kind of file")
   end
@@ -55,8 +69,8 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
       forward_match += 1 if f_match 
       reverse_match += 1 if r_match 
     else
-      f_match = r_re_rc.match(seq)
-      r_match = f_re_rc.match(seq)
+      f_match = f_re_rc.match(seq)
+      r_match = r_re_rc.match(seq)
       rev_comp = true if f_match && r_match
       forward_match += 1 if f_match 
       reverse_match += 1 if r_match 
@@ -66,25 +80,42 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
       both_match += 1
       f_len = f_match[1].length
       r_len = r_match[1].length
-      seq = seq.complement if rev_comp == true
-      cap_sub_seq = get_subsequence(f_len, r_len, seq)
+      seq = seq.complement if rev_comp
+      sub_seq = get_subsequence(f_len, r_len, seq)
       fm.puts f_len
       rm.puts r_len
 
       if db_class == 'fasta'
         abort("#{r_match}") if r_match[1].nil?
         output.puts(">#{entry.definition}")
-        output.puts(cap_sub_seq)
+        output.puts(sub_seq)
       else
         q = entry.quality_string
-        q = q.reverse if rev_comp == true
+        q = q.reverse if rev_comp
         end_qual = seq.length - r_len - 1
-        sub_qual = q[f_len .. end_qual ]
+        sub_qual = q[ f_len .. end_qual ]
+        write_fastq_entry(entry.definition, sub_seq, sub_qual, output)
 
-        output.puts('@' + entry.definition)
-        output.puts(cap_sub_seq)
-        output.puts("+")
-        output.puts(sub_qual)
+      end
+
+    elsif f_match
+      if db_class == 'fasta'
+        fnr.puts(">#{entry.definition}")
+        fnr.puts(seq.upcase)
+      else
+        q = entry.quality_string
+        q = q.reverse if rev_comp
+        write_fastq_entry(entry.definition, seq, q, fnr)
+      end
+
+    elsif r_match
+       if db_class == 'fasta'
+        rnf.puts(">#{entry.definition}")
+        rnf.puts(seq.upcase)
+      else
+        q = entry.quality_string
+        q = q.reverse if rev_comp
+        write_fastq_entry(entry.definition, seq, q, rnf)
       end
     end
   end
