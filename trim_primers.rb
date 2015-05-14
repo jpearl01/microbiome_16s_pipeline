@@ -57,9 +57,10 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
   else 
     abort("I don't recognize this kind of file")
   end
-  rev_comp = false
+
   
   ff.each do |entry|
+    rev_comp = false
     seq = entry.naseq
     total_seqs += 1
 

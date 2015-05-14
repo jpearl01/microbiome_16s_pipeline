@@ -34,13 +34,12 @@ to_plot="data_to_plot.dat"
 #-relabel barcodelabel=${samp_name}\;${samp_name}_ -eeout -fastq_trunclen $trunc_len 
 
 #need this if starting from fastq
-#usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee -fastq_trunclen $trunc_len 
-
+usearch -fastq_filter $fastq_file  -fastaout $fasta_reads -fastq_maxee $ee 
 #-minuniquesize 2
 #usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout 
-usearch -derep_fulllength $fastq_file -fastaout derep.fasta -sizeout 
+usearch -derep_fulllength $fasta_reads -fastaout derep.fasta -sizeout -strand both
 usearch -sortbysize derep.fasta -fastaout sorted.fasta
-usearch -cluster_otus sorted.fasta -otus old_otus.fasta -uparseout uparseout -sizeout -sizein
+usearch -cluster_otus sorted.fasta -otus old_otus.fasta -uparseout uparseout -sizeout -sizein -strand both
 python ~/bin/fasta_number.py old_otus.fasta OTU_ > otus.fasta
 usearch -usearch_global $fastq_file -db otus.fasta -strand both -uc readmap -id .97
 python ~/bin/uc2otutab.py readmap > table
