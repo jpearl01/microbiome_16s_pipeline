@@ -1,0 +1,55 @@
+
+
+summary.seqs(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.align, name=../../max_len1500_trimmed_unmapped_ee6k.trim.names)
+screen.seqs(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.align, name=../../max_len1500_trimmed_unmapped_ee6k.trim.names, group=../../groups.grp, end=43115, optimize=start, criteria=95, processors=15)
+
+Output File Names: 
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.align
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.bad.accnos
+../../max_len1500_trimmed_unmapped_ee6k.trim.good.names
+../../groups.good.grp
+
+ unique.seqs(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.align, name=../../max_len1500_trimmed_unmapped_ee6k.trim.good.names)
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.names
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.align
+
+filter.seqs(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.align, vertical=T, trump=.)
+Length of filtered alignment: 3948
+Number of columns removed: 46052
+Length of the original alignment: 50000
+Number of sequences used to construct filter: 379777
+
+Output File Names: 
+../../max_len1500_trimmed_unmapped_ee6k.filter
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.fasta
+
+list.seqs(name=yourTrimmedNameFile)
+get.seqs(group=yourGroupFile, accnos=current)
+
+pre.cluster(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.fasta, name=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.names, group=../../groups.good.pick.grp, diffs=10)
+
+chimera.uchime(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.fasta, name=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.names, group=../../groups.good.pick.grp, processors=15, reference=self)
+
+[ERROR]: trouble parsing chimera results. Cannot find m150210_205327_42168_c100788172550000001823173308251500_s1_p0.
+
+mothur > remove.seqs(accnos=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.uchime.accnos, fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.fasta, name=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.names, group=../../groups.good.pick.grp, dups=T)
+Removed 2094 sequences from your name file.
+Removed 1884 sequences from your fasta file.
+Removed 2094 sequences from your group file.
+
+Output File Names: 
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.names
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.fasta
+../../groups.good.pick.pick.grp
+
+
+classify.seqs(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.fasta, name=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.names, group=../../groups.good.pick.pick.grp,template=trainset9_032012.pds.fasta, taxonomy=trainset9_032012.pds.tax, cutoff=80)
+
+
+ remove.lineage(fasta=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.fasta, name=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.names, group=../../groups.good.pick.pick.grp, taxonomy=../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.pds.wang.taxonomy, taxon=Mitochondria-Chloroplast-Archaea-Eukaryota-unknown)
+Output File Names: 
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.pds.wang.pick.taxonomy
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.pick.names
+../../max_len1500_trimmed_unmapped_ee6k.trim.unique.good.unique.filter.precluster.pick.pick.fasta
+../../groups.good.pick.pick.pick.grp
+

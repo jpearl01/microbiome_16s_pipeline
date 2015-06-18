@@ -1,0 +1,25 @@
+
+REM  fill  file location
+fastq.info(fastq=C:\Users\Vishal\Desktop\test\disk1.fastq)
+unique.seqs(fasta=current)
+summary.seqs(fasta=current, name=current)
+REM  fill reference file location and edit processors as you want
+align.seqs(fasta=current, reference=C:\Users\Vishal\Desktop\test\silva.bacteria.fasta, processors=8)
+summary.seqs(fasta=current, name=current)
+REM  write your groups  file location and processors
+screen.seqs(fasta=current,name=current,group=C:\Users\Vishal\Desktop\test\test.groups,maxlength=1500,criteria=90,processors=8)
+summary.seqs(fasta=current, name=current)
+filter.seqs(fasta=current, vertical=T, trump=., processors=8)
+unique.seqs(fasta=current)
+pre.cluster(fasta=current, name=current, group=C:\Users\Vishal\Desktop\test\test.groups, diffs=2)
+summary.seqs(fasta=current, name=current)
+chimera.uchime(fasta=current, name=current, group=C:\Users\Vishal\Desktop\test\test.groups, processors=8)
+dist.seqs(fasta=current.fasta, cutoff=0.15, processors=8)
+cluster(column=current, name=current)
+make.shared(list=current, group=C:\Users\Vishal\Desktop\test\test.groups, label=0.03)
+
+REM transpose of shared file is otu table
+  
+
+
+

@@ -1,0 +1,503 @@
+---
+title: "Biogeography Analysis of Sino-Nasal Microbiome"
+author: "Josh Earl & Vishal Selke"
+date: "06/12/2015"
+output: html_document
+---
+#Introduction
+In order to evaluate the microbial structure of the sino-nasal cavity samples from 12 patients were subjected to microbiome sequenceing of the 16s gene using Pacific Biosciences P6C4 chemistry.  Samples were taken from 6 different sites, either with a swab, or a biopsy of the tissue. PCR amplification of the 16s gene with forward and reverse primers containing degenerate sequences (in order to capture 16s gene DNA which did not match exactly to a single 22bp primer).  Sequences were then ligated with 1 of 4 16bp barcode sequences for multiplexing purposes.  Sequences were then circularized by attaching hairpin sequence on each end of the double-stranded DNA.  A 'cell', which is a chip containing 150k wells (where one well should contain a single polymerase, and a single DNA sequence) was preppared with a mixture of 4 different samples, each with a different barcode.  DNA was subsequently sequenced in the Pacific Biosciences RS sequencer.  Reads were then analyzed with a combination of Pacific Biosciences SMRTportal software v2.3.0 Patch3, custom Ruby and BASH scripts, the Usearch v8.0.1623_i86linux64 clustering pipeline, the Mothur v1.35.1 clustering pipeline, and subsequent analysis using R v3.1.2 using packages vegan, ape, printr, ggplot2, smacof, plyr, GUniFrac, and ecodist. Neither pipeline had an SOP for best practices using Pacific Biosciences reads, therefore much of the initial effort were attempting to identify correct parameters for the most accurate analysis of these reads.
+
+
+#Methods and Results
+Map of locations of sampling areas (note, each pair of ascii characters represents a single site, and either a swab or biopsy, i.e. (A,B) = (Swab,Biopsy) of same location):
+```{r sampled_areas}
+library(printr)
+library(plyr)
+library(ggplot2)
+library(vegan)
+source("~/projects/nasal/ee6k/multiplot.R")
+site_key <- read.delim("~/projects/nasal/site_key.txt", header=FALSE)
+rename(site_key, c("V1"="ASCII_Code", "V2"="Location"))
+table_not_unmapped <- read.delim("~/projects/nasal/stats/table_not_unmapped", header=FALSE)
+```
+
+Reads from Pacific Biosciences RS machine were analysed with the Reads of Insert protocol.  Each read was binned by a forward and reverse barcode sequence, (which was subsequently removed) and required to have a (non-phred, internal Pacific Biosciences) quality of 90, and have at least 5 passes.  The output of these analyses were fastq files containing reads with Phred-style quality values, for which the minimum quality value of a nucleotide was 0, and the maximum value was 42.  The Pacific Bioscience software used to demultiplex the reads (it was found) would also trim off several bp of the adjacent primer.  These reads were then relabelled by patient/site (according to it's barcode sequence) and then filtered by the presence of primer sequences, which were used to correct the reads to be on a consistent strand via a custom ruby script, using regular expression matching (requireing both a forward and reverse primer, and 100% identity match of 11 of 22bp).
+
+TODO: put in hisograms of primer match lengths
+
+Due to primer ambiguity and high concentration of human DNA, several hot spots on the human genome were revealed to have matched the primers. To account for this and remove human DNA, all reads were then aligned to the human genome using the bwa version 0.7.9a-r786 software.  All mapped reads were removed. 
+
+##Each pair of samples shows higher levels of human DNA when compared to it's associated swab (e.g. A & B)
+```{r, human_DNA_swab_v_biopsy, echo=FALSE}
+type <- gsub("B|D|F|H|J|L","biopsy", table_not_unmapped$V4)
+type <- gsub("[A-Z]$","swab", type)
+table_not_unmapped_with_type <- cbind(table_not_unmapped, type)
+qplot(x=V4, data=table_not_unmapped_with_type, geom="histogram", main="Histogram of Reads Mapping to Human", xlab="Site", ylab="Number of Reads Mapped to Human", fill=type)
+
+```
+
+##Controls showed no Human DNA
+```{r human_DNA_by_patient}
+q<-qplot(x=V5, data=table_not_unmapped, geom="histogram", main="Histogram of Reads Mapping to Human", xlab="Patient", ylab="Number of Reads Mapped to Human")
+q + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+##There were specific hotspots on the human chromosome, this seems indicative of primer matching to particular locations on the human genome.
+```{r, human_DNA_hotspots, echo=FALSE}
+qplot(x=V9, data=table_not_unmapped, geom="histogram", main="Histogram of Reads Mapping to Human by Location", xlab="Location on Human Genome", ylab="Number of Reads Mapped") + facet_grid(V8 ~ ., scale="free", space="free")
+
+```
+Analysis of the distribution of lengths of the remaining reads, and the quality of the bases at each position informed a decision to further filter the reads by length (<=1500bp).  In the following figures we can see that After 1500 bp read quality drastically drops, as does the number of reads which are longer:
+
+####Read quality information before trimming to 1500bp (human and primer filtered)
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+trimmed_unmapped_eestats <- read.delim("~/projects/nasal/ee6k/ee6k_unmapped_trimmed.eestats")
+qplot(x=Pos, y=Mean_Q, ymax=Hi_Q, ymin=Low_Q,data=trimmed_unmapped_eestats, geom="linerange", main="Average Quality at Each Base with Upper and Lower Quantile", xlab="Position of Base", ylab="Mean Quality with Upper/Lower Quantile")
+#ee_linerange <- 
+qplot(x=Pos, y=Mean_EE, ymax=Hi_EE, ymin=Low_EE,data=trimmed_unmapped_eestats, main="Cumulative Expected Error Each Base with Upper and Lower Quantile", geom="linerange", xlab="Position of Base", ylab="Mean Quality with Upper/Lower Quantile")
+#ee_linerange + geom_linerange(aes(x=Pos, y=Mean_EE, ymax=Mean_EE, ymin=Low_EE, colour=I("red")))
+percent_reads <- qplot(x=Pos, y=PctRecs, data=trimmed_unmapped_eestats, geom="line", main="Percentage of Reads with a Base at Each Position", xlab="Position of Base", ylab="Percent of Reads with Base")
+percent_reads +geom_area(aes(y = PctRecs))
+
+
+```
+
+
+After filtering reads to have:
+
+1. Matching primers
+2. Not match the human genome
+3. Read length <= 1500bp
+
+The total reads available before these filtering steps was 779,971 for all samples.  After these filters we are left with 466,481, or about 60% of the total reads. 
+
+these reads were then run through the uclust pipeline using the usearch version v8.0.1623_i86linux64, which is as follows:
+
+1. Filter reads by Expected Error
+2. Deduplicate identical reads
+3. Sort reads by deduplicated size 
+4. Cluster reads at 97% identity into OTUs (chimeras identified during this step)
+5. Map reads back to clusters
+6. Produce count table of each OTU
+7. Map OTUs to rdp16s database for taxonomic identification
+
+Reads were also run through a similar Mothur pipeline, which was as follows:
+
+1. Sequences deduplicated
+2. Sequences aligned to a reference (silva template alignment)
+3. Sequences filtered by alignment region
+4. Sequences trimmed of gaps
+5. Deduplicated again, this time allowing 10bp mismatch
+6. Chimera's removed with uchime against rdp16s database
+7. Distance matrix created of all distances between each sequence
+8. Data clustered with 'Furthest Neighbor', or all sequences are at most X% away from each other
+9. Reads classified against Mitochondria, chloroplasts, archaea, and Eukaryotes - these removed
+10. Reads classified against Silva database
+
+Unfortunately, after using our input of 466,481 reads, the Mothur pipeline was only able to get down to an OTU count of 94,018, which is an extraordinarily large number of OTU.  In the time available, I was unable to determine which factor contributed the most to the large OTU count.  Possible reasons for this might include the 'Furthest Neighbor' default clustering, the level of identity at which the reads were clustered, the length of the reads being different than what the classifier was trained at, using average quality instead of expected error, and some of the errors which happened during the clustering which we could not resolve (chimera's may not have been properly removed, for instance).  Further evidence this technique may not be appropriate for these reads is that after the classification step, *every* OTU read received a confidence of 100%, at every level of taxonomy, down to Genus.  I find that incredibly suspicious, and again I think an artifact of our reads being extraordinarily long, in comparison to other next gen sequencing technologies. 
+
+For the remainder of the document, we'll be examining the different levels of filtering done with the Uparse (Uclust) pipeline.  Let's look at how many reads are left at each filtering level (where ee=Expected Error):
+
+```{r num_filtered_reads}
+#Sum read counts in each sample
+count_table <- read.table('~/projects/nasal/stats/count_table', header=T)
+counts_ordered <- count_table[order(count_table$sample),]
+filtered_totals <- data.frame(sums=colSums(counts_ordered[,2:10]), filters=names(counts_ordered[,2:10]))
+filtered_totals$filters <- factor(filtered_totals$filters, levels=filtered_totals$filters[order(filtered_totals$sums, decreasing=TRUE)])
+qplot(y=sums, x=filters, data=filtered_totals, geom="bar", main="Total Counts of Reads After Filters", ylab="Count of Reads", xlab="Filters", stat="identity")
+
+#Manipulate data into format recognized by ggplot
+groups <- factor(as.vector(sapply(names(counts_ordered[1:122,2:10]), rep, times=122)), levels=c("no_filter", "no_human", "trimmed", "no_long", "ee30", "ee10", "ee1", "ee.5", "ee.01"))
+count_data_ggplot <- with(counts_ordered[1:122,2:10], data.frame(c(no_filter, no_human, trimmed, no_long, ee30, ee10, ee1, ee.5, ee.01), groups))
+names(count_data_ggplot) <- c("values", "groups")
+qplot(y=values, x=groups, data=count_data_ggplot, geom=c("jitter", "boxplot"), alpha=.5, main="Counts of Reads per Sample After Various Filters", ylab="Count of Reads in Samples", xlab="Filters")
+
+```
+
+After examining the different levels of reads left, we find that our positive controls are perfectly classified at an expected error level of 1, AND there are no missing samples (i.e. all samples still have reads remaining in the clustering).  This is important because there were significant differences in the number of reads per sample coming off of the sequencer, in fact we had orders of magnitude different numbers of reads depending on the sample. Therefore, from here forward, we'll focus on the OTUs identified by the Uparse pipeline after an expected error of at least 1 or less. Before we do that though, lets look at some additional reasoning behind why we would like to use as low an expected error as we can:
+
+##How Filtering on Expected Error Changes OTU Error Distribution
+
+```{r ee30_histo}
+all_ee <- read.table("~/projects/nasal/ee6k/all_ee", header=TRUE, quote="\"")
+ee_lt_30 <- subset(all_ee, ee < 30)
+otu_ee30 <- read.table("~/projects/nasal/ee6k/ee30/otu_ee30", quote="\"")
+p1<-qplot(ee, data=ee_lt_30, geom="histogram", main="Histogram of Expected Error (<=30)", xlab="Expected Error", ylab="Count in Bin") +theme(plot.title = element_text(colour="black", size=10))
+p2<-qplot(V1, data=subset(otu_ee30, V1<=30), geom="histogram", main="Histogram of OTUs at Expected Error (<=30)", ylab="OTU bins", xlab="Expected Error")+theme(plot.title = element_text(colour="black", size=10))
+multiplot(p1, p2, cols=2)
+```
+We can see that if we use a high expected error, we begin to select OTU sequences that are heavily skewed towards high error.  This is because we are looking for sequences which differ from all other sequences, a result of that is to pull in sequences that differ mainly due to erroneous sequence, as opposed to being truly biologically different.
+
+
+```{r ee1_histo}
+ee_lt_1 <- subset(all_ee, ee < 1)
+otu_ee1 <- read.table("~/projects/nasal/ee6k/ee1/otu_ee1", quote="\"")
+p1<-qplot(ee, data=ee_lt_1, geom="histogram", main="Histogram of Expected Error (<=1)")+theme(plot.title = element_text(colour="black", size=10))
+p2<-qplot(V1, data=subset(otu_ee1,V1<=1), geom="histogram", main="Histogram of OTUs at Expected Error (<=1)", ylab="OTU bins", xlab="Expected Error")+theme(plot.title = element_text(colour="black", size=10))
+multiplot(p1, p2, cols=2)
+
+```
+The distributions are different at an error of less than 1.  We still see some over-representation of sequences with relatively higher error, but now we don't care very much since that error is still estimated to be 1 or fewer.
+
+
+
+#Alpha Diversity
+We next examine how Alpha Diversity is distributed across the different samples.  We can also look at how many different species we have, as a sort of first pass
+
+```{r}
+utax_split <- read.table("~/projects/nasal/ee6k/ee1/utax_split", header=TRUE, row.names=1)
+table_ee1 <- read.delim("~/projects/nasal/ee6k/ee1/table")
+table_with_tax_ee1 <- merge(utax_split, table_ee1, by.x="row.names", by.y="OTUId")
+genus_abundance_table <- cbind(Genus=table_with_tax_ee1$Genus, table_with_tax_ee1[15:ncol(table_with_tax_ee1)])
+
+sum_tax_ee1 <- (rowSums(genus_abundance_table[2:ncol(genus_abundance_table)]))
+genus_abundance<-cbind.data.frame(Genus=genus_abundance_table$Genus, sum_tax_ee1)
+unique_genus_sums <- aggregate(genus_abundance$sum_tax_ee1, by=list(genus_abundance$Genus), FUN=sum)
+ugs_ee1 <- aggregate(genus_abundance$sum_tax_ee1, by=list(genus_abundance$Genus), FUN=sum)
+unique_genus_sums$Group.1 <- factor(unique_genus_sums$Group.1, levels=unique_genus_sums$Group.1[order(unique_genus_sums$x)])
+
+q <- qplot(x=Group.1, y=x, data=unique_genus_sums, geom="point", xlab="Genus", ylab="Total count of Genus in all Patients", main="Log Sum of All Unique Genera Expected Error <1", log="y")
+q + theme(axis.text.x=element_text(angle= 90, hjust = 1))
+q <- qplot(x=Group.1, y=x, data=subset(unique_genus_sums, x>10), geom="point", xlab="Genus", ylab="Total count of Genus in all Patients", main="Log Sum of All Unique Genera (counts >10, EE<=1)", log="y")
+q + theme(axis.text.x=element_text(angle= 90, hjust = 1))
+q <- qplot(x=Group.1, y=x, data=subset(unique_genus_sums, x>50), geom="point", xlab="Genus", ylab="Total count of Genus in all Patients", main="Log Sum of All Unique Genera (counts >50, EE<=1)", log="y")
+q + theme(axis.text.x=element_text(angle= 90, hjust = 1))
+#qplot(rowSums(table_with_tax[15:ncol(table_with_tax)]),data=table_with_tax, geom="bar", facets=Phylum ~ .)
+```
+
+Now lets calculate diversities based either on Patient or Site
+#Alpha Diversity
+##Shannon's Index (entropy)
+###Accounts for the number of individuals as well as taxa, varies from 0 (community only has one taxon) to high values for communities with many taxa, but few individuals
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+utax_ee1 <- read.table("~/projects/nasal/ee6k/ee1/table_transpose", header=TRUE,row.names=1, quote="\"")
+res <-strsplit(row.names(utax_ee1), '_')
+ee1_names_df= data.frame(matrix(unlist(res), nrow=length(res), byrow=T), stringsAsFactors=FALSE)
+utax_w_names_ee1 <- cbind.data.frame(site=ee1_names_df$X3, patient=ee1_names_df$X4, utax_ee1)
+utax_ee1_bray.dist <- vegdist(utax_ee1)
+utax_ee1_bray.dist.cmd <-cmdscale(utax_ee1_bray.dist)
+utax_ee1_bray.dist.df <- cbind.data.frame(names=row.names(utax_ee1_bray.dist.cmd), x=utax_ee1_bray.dist.cmd[,1], y=utax_ee1_bray.dist.cmd[,2], site=ee1_names_df$X3, patient=ee1_names_df$X4)
+
+#By OTU
+OTUs_sum_by_patient <- aggregate(utax_w_names_ee1[,3:ncol(utax_w_names_ee1)], by=list(utax_w_names_ee1$patient), FUN=sum)
+shannon_pat <- diversity(OTUs_sum_by_patient[,2:ncol(OTUs_sum_by_patient)], "shannon")
+shannon_patient_df <- data.frame(shannon_OTU=shannon_pat, patient=OTUs_sum_by_patient$Group.1)
+
+#By Genus
+genus_patient.v4 <- read.csv("~/projects/nasal/ee6k/genus_patient.v4.csv")
+shannon_pat_genus <- diversity(genus_patient.v4[,2:ncol(genus_patient.v4)], "shannon")
+shannon_pat_genus <- data.frame(shannon_genus=shannon_pat_genus, patient=genus_patient.v4$X)
+
+#Plot Patient Shannon (by OTU)
+x <- shannon_patient_df[order(shannon_patient_df$shannon_OTU),]
+x$patient <- factor(x$patient, levels=x$patient[order(x$shannon_OTU)])
+qplot(x=patient, y=shannon_OTU, data=x, geom="point", color=patient, main="Shannon's Diversity by Patient") +ylim(0, 2.5)
+
+#By OTU
+OTUs_sum_by_site <- aggregate(utax_w_names_ee1[,3:ncol(utax_w_names_ee1)], by=list(utax_w_names_ee1$site), FUN=sum)
+shannon_site <- diversity(OTUs_sum_by_site[,2:ncol(OTUs_sum_by_site)], "shannon")
+shannon_site_df <- data.frame(shannon_OTU=shannon_site, site=OTUs_sum_by_site$Group.1)
+
+#By Genus
+genus_site.v4 <- read.csv("~/projects/nasal/ee6k/genus_sites.v4.csv")
+shannon_site_genus <- diversity(genus_site.v4[,2:ncol(genus_site.v4)], "shannon")
+shannon_site_genus <- data.frame(shannon_genus=shannon_site_genus, site=genus_site.v4$X)
+
+#Plot Site Shannon (by OTU)
+x <- shannon_site_df[order(shannon_site_df$shannon_OTU),]
+x$site <- factor(x$site, levels=x$site[order(x$shannon_OTU)])
+qplot(x=site, y=shannon_OTU, data=x, geom="point", color=site, main="Shannon's Diversity by Site")+ylim(0, 2.5)
+
+```
+
+##Simpson's Index (Dominance)
+###Simpson's index (inverse) indicates how dominated a population is by few taxa, the closer it is to 1, the more evenly spread out the population is, the closer to sero the more dominated it is by few taxa
+```{r, warning=FALSE}
+
+
+#By OTU
+simpson_pat <- diversity(OTUs_sum_by_patient[,2:ncol(OTUs_sum_by_patient)], "simpson")
+simpson_patient_df <- data.frame(simpson_OTU=simpson_pat, patient=OTUs_sum_by_patient$Group.1)
+
+#By Genus
+simpson_pat_genus <- diversity(genus_patient.v4[,2:ncol(genus_patient.v4)], "simpson")
+simpson_pat_genus <- data.frame(simpson_genus=simpson_pat_genus, patient=genus_patient.v4$X)
+
+#Plot Simpson by Patient (OTU)
+x <- simpson_patient_df[order(simpson_patient_df$simpson_OTU),]
+x$patient <- factor(x$patient, levels=x$patient[order(x$simpson_OTU)])
+qplot(x=patient, y=simpson_OTU, data=x, geom="point", color=patient, main="Simpson's Diversity by Patient") + ylim(0, 1)
+
+#Create Table
+shannon_patient_df <- cbind.data.frame(shannon_patient_df, counts=rowSums(OTUs_sum_by_patient[,2:ncol(OTUs_sum_by_patient)]))
+simp_shan_pat <- merge(simpson_patient_df, shannon_patient_df, by.x="patient", by.y="patient")
+simp_shan_pat <- merge(simp_shan_pat, shannon_pat_genus, by.x="patient", by.y="patient")
+write.table(merge(simp_shan_pat, simpson_pat_genus, by.x="patient", by.y="patient"), file="patient_alpha_diversity", quote=FALSE, col.names=NA, row.names=TRUE, sep=",")
+
+#By OTU
+simpson_site <- diversity(OTUs_sum_by_site[,2:ncol(OTUs_sum_by_site)], "simpson")
+simpson_site_df <- data.frame(simpson_OTU=simpson_site, site=OTUs_sum_by_site$Group.1)
+
+#By Genus
+simpson_site_genus <- diversity(genus_site.v4[,2:ncol(genus_site.v4)], "simpson")
+simpson_site_genus <- data.frame(simpson_genus=simpson_site_genus, site=genus_site.v4$X)
+
+#Plot Simpson by site (OTU)
+x <- simpson_site_df[order(simpson_site_df$simpson_OTU),]
+x$site <- factor(x$site, levels=x$site[order(x$simpson_OTU)])
+qplot(x=site, y=simpson_OTU, data=x, geom="point", color=site, main="Simpson's Diversity by Site")+ ylim(0, 1)
+
+shannon_site_df <- cbind.data.frame(shannon_site_df, counts=rowSums(OTUs_sum_by_site[,2:ncol(OTUs_sum_by_site)]))
+simp_shan_site <- merge(simpson_site_df, shannon_site_df, by.x="site", by.y="site")
+simp_shan_site <- merge(simp_shan_site, simpson_site_genus, by.x="site", by.y="site")
+write.table(merge(simp_shan_site, shannon_site_genus, by.x="site", by.y="site"), file="site_alpha_diversity", quote=FALSE, col.names=NA, row.names=TRUE, sep=",")
+
+```
+
+```{r, warning=FALSE}
+ee1_samp_names <- paste(ee1_names_df$X3, ee1_names_df$X4,sep="_")
+OTUs_sum_by_samp <- aggregate(utax_w_names_ee1[,3:ncol(utax_w_names_ee1)], by=list(ee1_samp_names), FUN=sum)
+
+#Simpson sample by OTU
+simpson_samp <- diversity(OTUs_sum_by_samp[,2:ncol(OTUs_sum_by_samp)], "simpson")
+simpson_sample_df <- data.frame(simpson_OTU=simpson_samp, sample=OTUs_sum_by_samp$Group.1)
+
+#By Genus
+genus_samp.v4 <- read.csv("~/projects/nasal/ee6k/genus_count.v4.csv")
+simpson_samp_genus <- diversity(genus_samp.v4[,2:ncol(genus_samp.v4)], "simpson")
+simpson_samp_genus <- data.frame(simpson_genus=simpson_samp_genus, sample=genus_samp.v4$X)
+
+#Plot Sample Simpsons by OTU
+x <- simpson_sample_df[order(simpson_sample_df$simpson_OTU),]
+x$sample <- factor(x$sample, levels=x$sample[order(x$simpson_OTU)])
+q <- qplot(x=sample, y=simpson_OTU, data=x, geom="point", color=sample, main="Simpson's Diversity by Sample")
+q + theme(axis.text.x=element_text(angle= 90, hjust = 1))+ ylim(0, 1)
+
+#Shannon sample by OTU
+shannon_samp <- diversity(OTUs_sum_by_samp[,2:ncol(OTUs_sum_by_samp)], "shannon")
+shannon_sample_df <- data.frame(shannon_OTU=shannon_samp, sample=OTUs_sum_by_samp$Group.1)
+
+#Shannon sample by Genus
+shannon_samp_genus <- diversity(genus_samp.v4[,2:ncol(genus_samp.v4)], "shannon")
+shannon_samp_genus <- data.frame(shannon_genus=shannon_samp_genus, sample=genus_samp.v4$X)
+
+#Plot Sample Shannon by OTU
+x <- shannon_sample_df[order(shannon_sample_df$shannon_OTU),]
+x$sample <- factor(x$sample, levels=x$sample[order(x$shannon_OTU)])
+q <- qplot(x=sample, y=shannon_OTU, data=x, geom="point", color=sample, main="Shannon's Diversity by Sample")
+q + theme(axis.text.x=element_text(angle= 90, hjust = 1))+ ylim(0, 2.5)
+
+#
+shannon_sample_df <- cbind.data.frame(shannon_sample_df, counts=rowSums(OTUs_sum_by_samp[,2:ncol(OTUs_sum_by_samp)]))
+simp_shan_samp <- merge(simpson_sample_df, shannon_sample_df, by.x="sample", by.y="sample")
+simp_shan_samp <- merge(simp_shan_samp, shannon_samp_genus, by.x="sample", by.y="sample")
+write.table(merge(simp_shan_samp, simpson_samp_genus, by.x="sample", by.y="sample"), file="sample_alpha_diversity", quote=FALSE, col.names=NA, row.names=TRUE, sep=",")
+
+```
+
+We can see that the diversity of these samples extends from extremely low diversity, highly dominated by just a few taxa, to very evenly distributed samples with many taxa significantly represented.  Next we want to see how the groups compare, especially between sites, and between patients
+
+#Beta Diversity
+##Lets try a non-metric multidimensional scaling of a couple different distance measures (appropriate for microbial ecology)
+```{r, results='hide', tidy=TRUE, warning=FALSE, message=FALSE}
+utax_ee1 <- read.table("~/projects/nasal/ee6k/ee.5/table_transpose", header=TRUE,row.names=1, quote="\"")
+res <-strsplit(row.names(utax_ee1), '_')
+ee1_names_df= data.frame(matrix(unlist(res), nrow=length(res), byrow=T), stringsAsFactors=FALSE)
+utax_w_names_ee1 <- cbind.data.frame(site=ee1_names_df$X3, patient=ee1_names_df$X4, utax_ee1)
+utax_ee1.nmds <- metaMDS(utax_ee1, distance="bray", trymax=50)
+utax_ee1.nmds.df <- cbind.data.frame(names=row.names(utax_ee1.nmds$points), x=utax_ee1.nmds$points[,1], y=utax_ee1.nmds$points[,2], site=ee1_names_df$X3, patient=ee1_names_df$X4)
+qplot(x=x,y=y,data=utax_ee1.nmds.df, color=patient, main=expression(paste("Non-Metric Multidimensional Scaling of Bray-curtis Distance Matrix \n \t\t Color by Patient EE1")))+theme(plot.title = element_text(colour="black", size=10))
+
+```
+
+##Now let's see how using a Jaccard distance changes things
+```{r, results='hide', tidy=TRUE, warning=FALSE}
+utax_ee1.nmds <- metaMDS(utax_ee1, distance="jaccard", trymax=50)
+utax_ee1.nmds.df <- cbind.data.frame(names=row.names(utax_ee1.nmds$points), x=utax_ee1.nmds$points[,1], y=utax_ee1.nmds$points[,2], site=ee1_names_df$X3, patient=ee1_names_df$X4)
+qplot(x=x,y=y,data=utax_ee1.nmds.df, color=patient, main=expression(paste("Non-Metric Multidimensional Scaling of Jaccard Distance Matrix \n \t\t Color by Patient EE1")))+theme(plot.title = element_text(colour="black", size=10))
+
+```
+
+Apparently, it doesn't change it very much.  This dataset is not significantly changed by the distance metric used.
+
+```{r, results='hide', tidy=TRUE,  warning=FALSE, message=FALSE}
+utax_ee1.nmds <- metaMDS(utax_ee1, trymax=50)
+utax_ee1.nmds.df <- cbind.data.frame(names=row.names(utax_ee1.nmds$points), x=utax_ee1.nmds$points[,1], y=utax_ee1.nmds$points[,2], site=ee1_names_df$X3, patient=ee1_names_df$X4)
+qplot(x=x,y=y,data=utax_ee1.nmds.df, color=site, main=expression(paste("Non-Metric Multidimensional Scaling of Bray-curtis Distance Matrix \n \t\t Color by Site EE1")))+theme(plot.title = element_text(colour="black", size=10))
+
+```
+
+Finally, let's try to get all our grouping information into a single plot
+```{r all_groupings, tidy=TRUE, warning=FALSE, message=FALSE}
+library(plyr)
+#Sum the replicates so each site/patient is unique in dataset
+utax_w_names_ee1_sum_replicates <- aggregate(utax_w_names_ee1[,3:ncol(utax_w_names_ee1)], by=list(utax_w_names_ee1$site,utax_w_names_ee1$patient), FUN=sum)
+utax_w_names_ee1_sum_replicates <- rename(utax_w_names_ee1_sum_replicates, c("Group.1"="site","Group.2"="patient"))
+
+swab_biop <- utax_w_names_ee1_sum_replicates[1]
+swab_biop$type <- gsub("A|C|E|G|I|K","swab",swab_biop$site)
+swab_biop$type <- gsub("^\\S$","biopsy",swab_biop$type)
+utax_w_names_type_sum <- cbind(swab_biop$type, utax_w_names_ee1_sum_replicates)
+utax_w_names_type_sum_ee1 <-rename(utax_w_names_type_sum, c("swab_biop$type"="type"))
+
+ee1_bray_dist <- vegdist(utax_w_names_ee1_sum_replicates[,3:ncol(utax_w_names_ee1_sum_replicates)], method="bray")
+
+ee1_bray.wmd <-wcmdscale(ee1_bray_dist, k=2)
+ee1_bray.wmd.df <- cbind.data.frame(names=row.names(utax_w_names_type_sum_ee1 ), x=ee1_bray.wmd[,1], y=ee1_bray.wmd[,2], site=utax_w_names_type_sum_ee1$site, patient=utax_w_names_type_sum_ee1$patient, type=utax_w_names_type_sum_ee1$type)
+
+qplot(x=x,y=y,data=ee1_bray.wmd.df, color=patient, shape=type, size=site, main=expression(paste("Weighted Classic Multidimensional Scaling of Bray-curtis Distance Matrix \n Color by Patient EE<=30"))) + scale_colour_brewer(palette="Set3") + theme(panel.background=element_rect(fill="dark grey"))
+```
+
+
+##Finally, let's show a multidimensional scaling using Unifrac calculated distances:
+```{r unifrac, tidy=TRUE, warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(ecodist)
+library(labdsv)
+library(ade4)
+library(smacof)
+library(GUniFrac)
+utax_ee.5 <- read.table("~/projects/nasal/ee6k/ee.5/transposed_ee.5_table", header=TRUE,row.names=1, quote="\"")
+utax_for_tree <- utax_ee.5[-c(80,  98, 190, 192)]
+tree <- read.tree("/home/jearl/projects/nasal/ee6k/ee.5/RAxML_bestTree.otus_pynast_aligned_rooted2.tree")
+rooted_tree = multi2di(root(tree, "OTU_130"))
+dat.mds.unifrac <- GUniFrac(utax_for_tree, rooted_tree, alpha=c(0,0.5,1))$unifracs
+dw <- dat.mds.unifrac[,,"d_1"] # Weighted UniFrac
+du <- dat.mds.unifrac[, , "d_UW"] # Unweighted UniFrac
+dv <- dat.mds.unifrac[, , "d_VAW"] # Variance adjusted weighted UniFrac
+d0 <- dat.mds.unifrac[, , "d_0"] # GUniFrac with alpha 0
+d5 <- dat.mds.unifrac[, , "d_0.5"] # GUniFrac with alpha 0.5
+
+utax_ee1.nmds <- metaMDS(as.dist(dw), trymax=50)
+utax_names <- data.frame(matrix(unlist(strsplit(row.names(dw), "_")), nrow=length(row.names(dw)), byrow=T), stringsAsFactors=FALSE)
+names(utax_names) <- c("nothing", "things", "site", "patient")
+utax_ee1.nmds.df <- cbind.data.frame(names=row.names(utax_ee1.nmds$points), x=utax_ee1.nmds$points[,1], y=utax_ee1.nmds$points[,2], site=utax_names$site, patient=utax_names$patient)
+qplot(x=x,y=y,data=utax_ee1.nmds.df, color=site, main=expression(paste("Non-Metric Multidimensional Scaling of GUnifrac Unweighted Distance Matrix \n \t\t Color by Site EE1")), xlab="MDS1", ylab="MDS2")+theme(plot.title = element_text(colour="black", size=10))
+##plot(dw)
+##plot(du)
+##plot(dv)
+
+```
+
+Annoyingly it's difficult to remove the positive controls from the distance matrix using the GUnifrac distance calculation.  We'll ignore the statistics between them for now with unifrac, but eventually we would like to revisit it.
+
+While we cannot see a very clear split between different groups of samples/sites, let's do ANOSIM and ANOVA measures to statistically check if there might be statistically significant differences between these groups. We've already calculated the distance matrices for Jaccard and Bray-curtis distances (and they don't have the positive controls), so let's examine them with ANOSIM
+```{r ANOSIM, tidy=TRUE, warning=FALSE, message=FALSE}
+
+bray_anosim_site <- anosim(ee1_bray_dist, utax_w_names_type_sum_ee1$site)
+summary(bray_anosim_site)
+
+bray_anosim_patient <- anosim(ee1_bray_dist, utax_w_names_type_sum_ee1$patient)
+summary(bray_anosim_patient)
+
+bray_anosim_type <- anosim(ee1_bray_dist, utax_w_names_type_sum_ee1$type)
+summary(bray_anosim_type)
+
+```
+
+We can see pretty clearly that there is a difference if we group by patient, or by type (swab/biopsy), but a difference is less clear if we group by site.  Let's test these again, this time using the more robust method implemented in adonis:
+
+```{r adonis, tidy=TRUE, warning=FALSE, message=FALSE}
+bray_adonis_site <- adonis(ee1_bray_dist ~ utax_w_names_type_sum_ee1$site)
+bray_adonis_site$aov.tab
+
+bray_adonis_patient <- adonis(ee1_bray_dist ~ utax_w_names_type_sum_ee1$patient)
+bray_adonis_patient$aov.tab
+
+bray_adonis_type <- adonis(ee1_bray_dist ~ utax_w_names_type_sum_ee1$type)
+bray_adonis_type$aov.tab
+```
+
+So we can see there is a clear difference in the groups, if the grouping is by patient or type (swab/biopsy), but not a clear difference between sites.
+
+Finally lets examine a little closer the different taxa identified by this method:
+##If we get rid of chimera's found by Uchime after OTU clustering, require there to be more than one read assigned to an OTU, and remove 16s sequence which matched on the opposite strand (there were 3 sequences which did so) we get this:
+```{r otu_conf_ee1_final_filter, tidy=TRUE, warning=FALSE, message=FALSE}
+utax_split_ee1 <- read.table("~/projects/nasal/ee6k/ee1/utax_split", header=TRUE,row.names=1)
+utax_ee1 <- read.table("~/projects/nasal/ee6k/ee1/table_transpose", header=TRUE,row.names=1, quote="\"")
+sample_totals_ee1 <- rowSums(utax_ee1)
+
+otu_totals_ee1 <- colSums(utax_ee1)
+totals_ee1 <- as.data.frame(otu_totals_ee1)
+otu_totals_conf_ee1 <- merge(totals_ee1, utax_split_ee1, by.x="row.names", by.y="row.names")
+
+#Lets pull out all the OTUs with only a single sequence, and that matched the negative strand, and that were Chimeras
+#in the final chimera matching step:
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1, (otu_totals_ee1 > 1))
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1_final_filt, (strand != '-'))
+chimeras <- c("OTU_165","OTU_170","OTU_200","OTU_239","OTU_265","OTU_283")
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1_final_filt, !(Row.names %in% chimeras))
+
+qplot(y=otu_totals_ee1, x=Genus_conf, data=otu_totals_conf_ee1_final_filt, geom="point", color=Phylum, main="Log Scaled Sum OTU Count by Confidence in Genus Taxonomy Assignment EE<=1", xlab="Confidence of Genus Assignment (UPARSE)", ylab="Log Scaled Total Reads Mapping to OTU") + scale_y_log10() +facet_grid(.~Phylum)+theme(plot.title = element_text(colour="black", size=10))
+```
+
+##If we require there to be 50 or more sequences mapped to an OTU we get this:
+```{r otu_conf_ee1_final_filter_gt50, tidy=TRUE, warning=FALSE, message=FALSE}
+
+#Lets pull out all the OTUs with only a single sequence, and that matched the negative strand, and that were Chimeras
+#in the final chimera matching step:
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1, (otu_totals_ee1 > 50))
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1_final_filt, (strand != '-'))
+chimeras <- c("OTU_165","OTU_170","OTU_200","OTU_239","OTU_265","OTU_283")
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1_final_filt, !(Row.names %in% chimeras))
+
+qplot(y=otu_totals_ee1, x=Genus_conf, data=otu_totals_conf_ee1_final_filt, geom="point", color=Phylum, main="Log Scaled Sum OTU Count by Confidence in Genus Taxonomy Assignment EE<=1", xlab="Confidence of Genus Assignment (UPARSE)", ylab="Log Scaled Total Reads Mapping to OTU") + scale_y_log10() +facet_grid(.~Phylum)+theme(plot.title = element_text(colour="black", size=10))
+```
+
+
+#We can also get species level designation from the NCBI database (but no Confidence)
+```{r species, tidy=TRUE, warning=FALSE, message=FALSE}
+species_level_id <- read.delim("~/projects/nasal/ee6k/ee1/species_level_id", header=FALSE)
+otu_totals_conf_species_ee1 <- merge(otu_totals_conf_ee1, species_level_id, by.x="Row.names", by.y="V1")
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_species_ee1, (otu_totals_ee1 > 50))
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1_final_filt, (strand != '-'))
+chimeras <- c("OTU_165","OTU_170","OTU_200","OTU_239","OTU_265","OTU_283")
+otu_totals_conf_ee1_final_filt <- subset(otu_totals_conf_ee1_final_filt, !(Row.names %in% chimeras))
+
+qplot(y=otu_totals_ee1, x=V3, data=otu_totals_conf_ee1_final_filt, geom="bar", stat="identity", color=Phylum, main="Log Scaled Sum OTU Count by Confidence in Genus Taxonomy Assignment EE<=1", xlab="Closest Mapping Species From NCBI (minimum 97% identity)", ylab="Log Scaled Total Reads Mapping to OTU", log="y") +facet_grid(.~Phylum, scales="free_x")+ theme(axis.text.x=element_text(angle= 90, hjust = 1))+theme(plot.title = element_text(colour="black", size=10), axis.title = element_text(colour="black", size=10),axis.text = element_text(colour="gray20", size=5),axis.title.y= element_text(colour="black", size=8))
+
+```
+
+```{r rel_abundance}
+ utax_w_names_ee1_sum_reps_rel_abund <- cbind.data.frame(utax_w_names_ee1_sum_replicates[,1:2], utax_w_names_ee1_sum_replicates[,3:ncol(utax_w_names_ee1_sum_replicates)]/rowSums(utax_w_names_ee1_sum_replicates[,3:ncol(utax_w_names_ee1_sum_replicates)]))
+dist <- vegdist(utax_w_names_ee1_sum_reps_rel_abund[,3:ncol(utax_w_names_ee1_sum_reps_rel_abund)], method="bray")
+mds <-metaMDS(dist)
+utax_ee1.nmds.df <- cbind.data.frame(x=mds$points[,1], y=mds$points[,2], site=utax_w_names_ee1_sum_reps_rel_abund$site, patient=utax_w_names_ee1_sum_reps_rel_abund$patient)
+qplot(x=x,y=y,data=utax_ee1.nmds.df, color=patient, size=50, main=expression(paste("Non-Metric Multidimensional Scaling of Bray-curtis Distance Matrix \n \t\t Color by patient EE1")))+theme(plot.title = element_text(colour="black", size=20))
+mod_site <- betadisper(dist, utax_w_names_ee1_sum_reps_rel_abund$site)
+mod_patient <- betadisper(dist, utax_w_names_ee1_sum_reps_rel_abund$patient)
+anova_site <- anova(mod_site)
+anova_patient <- anova(mod_patient)
+
+permutest(mod_site, pairwise = TRUE)
+ plot(mod_site)
+ plot(mod_patient)
+ mod_site.HSD <- TukeyHSD(mod_site)
+ plot(mod_site.HSD)
+ mod_patient.HSD <- TukeyHSD(mod_patient)
+ plot(mod_patient.HSD)
+
+```
+
+```{r passes_ee_and_avg_qual}
+passes_ee_and_avg_qual <- read.table("~/projects/nasal/stats/passes_ee_and_avg_qual", quote="\"")
+names(passes_ee_and_avg_qual)<-c("read", "passes", "ee", "avg_qual")
+qplot(data=subset(passes_ee_and_avg_qual, passes<30), x=passes, y=ee, geom="jitter", alpha=.01, main="Expected Error by Number of ROI Passes", ylab="Expected Error", xlab="Number of Passes") +scale_y_log10()
+qplot(data=subset(passes_ee_and_avg_qual, passes<30), x=passes, y=avg_qual, geom="jitter", alpha=.0009, colour=passes, main="Average Quality by Number of ROI Passes", ylab="Average Quality", xlab="Number of Passes") + scale_colour_gradient(high="blue")
+qplot(data=subset(passes_ee_and_avg_qual, ee<100), x=avg_qual, y=ee, geom="point", alpha=.01) + geom_hline(yintercept=1, colour="red")
+qplot(data=passes_ee_and_avg_qual, x=avg_qual, y=ee, geom="point", alpha=.01) +scale_x_log10()
+qplot(data=subset(passes_ee_and_avg_qual, avg_qual>32), x=avg_qual, y=ee, geom="point", alpha=.01, main="Distribution of Expected Error When Average Quality >32", ylab="Expected Error", xlab="Average Quality") + geom_hline(yintercept=1, colour="red")
+qplot(data=subset(passes_ee_and_avg_qual, passes<30), x=avg_qual, geom="bar",main="Average Quality by Number of ROI Passes", ylab="Average Quality", xlab="Number of Passes", binwidth=.25)
+hist(log(passes_ee_and_avg_qual$avg_qual))
+p<-list()
+for(i in 3:25){
+  print(qplot(data=subset(passes_ee_and_avg_qual, passes==i), x=avg_qual, y=ee, geom="point", alpha=.01, main=i, log='y', xlim=c(1,42), ylim=c(0,150))) 
+        
+  #ggsave(file="test.png")
+}
+  
+```
+
+
