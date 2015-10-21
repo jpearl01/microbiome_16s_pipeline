@@ -6,6 +6,10 @@ require 'bio'
 
 
 abort("Can't open the sample pool file!") unless File.exists?("sample_key_3.txt")
+abort("Need to enter the expected error: usage -> pool_samples.rb expected_error") if ARGV[0].nil?
+
+ee = ARGV[0]
+
 
 #Lets store stdout to a log file
 $stdout.reopen('16s_before_after.log', 'w')
@@ -77,8 +81,8 @@ pb_projects.each do |id, samps|
 			puts "#{base_name}\t#{before.strip}\t#{after.strip}"
 
 
-			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ARGV[0]}")
-			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ARGV[0]} `
+			log.puts("usearch -fastq_filter corrected.fq  -fastqout #{base_name}.fastq  -relabel #{bc} -fastq_maxee #{ee}")
+			`usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -relabel #{bc} -fastq_maxee #{ee} `
 =end
 			
 			#Add in the barcode to the fastq header
@@ -92,7 +96,7 @@ pb_projects.each do |id, samps|
 			corrected.puts ""
 			corrected.close
 			#Remember to include the '-threads 1' to account for the non-unique id relabelling bug
-      `usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -fastq_maxee #{ARGV[0]} -eeout `
+      `usearch -fastq_filter corrected.fq -fastqout #{base_name}.fastq -fastaout #{base_name}.fasta -fastq_maxee #{ee} -eeout `
                   
 
 			File.delete(fq)
@@ -104,6 +108,6 @@ end
 
 File.delete('corrected.fq')
 
-`mkdir -p ee#{ARGV[0]}` unless Dir.exists?("ee#{ARGV[0]}")
-`cat *.fasta > ee#{ARGV[0]}/all_ee#{ARGV[0]}.fasta`
-`cat *.fastq > ee#{ARGV[0]}/all_ee#{ARGV[0]}.fastq`
+`mkdir -p ee#{ee}` unless Dir.exists?("ee#{ee}")
+`cat *.fasta > ee#{ee}/all_ee#{ee}.fasta`
+`cat *.fastq > ee#{ee}/all_ee#{ee}.fastq`
