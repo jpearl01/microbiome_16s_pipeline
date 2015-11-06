@@ -7,16 +7,17 @@ require 'bio'
 
 
 #Forward Primers
-f_re = Regexp.new('(^g?[agr]?a?g?a?g?t?t?t?g?a?t[tcy][acm]tggctcag)')
+f_re = Regexp.new('(a?g?[agr]?g?t?t?[tcy]?g?a?t?[tcy][acm]tggctcag)')
 
 #Reverse Primers
-r_re = Regexp.new('(aagtcgtaacaa?g?g?t?a?[agr]?c?c?g?t?a?)$')
-brain_r_re = Regexp.new('(ccagcag?c?c?g?c?g?g?t?a?a?t?)$')
+r_re = Regexp.new('(aagtcgtaacaa?g?g?t?a?[agr]?c?[tcy]?)')
+
 
 total_seqs = 0
 forward_match = 0
 reverse_match = 0
 both_match = 0
+not_both_match = 0
 
 puts "Ambiguous forward primer base regex #{f_re}"
 puts "Ambiguous reverse primer base regex #{r_re}"
@@ -66,7 +67,8 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
             output.puts(">#{entry.definition}")
             output.puts(cap_sub_seq)
         end
-    end
+      end
+
     else
       if !r_match.nil? && !f_match.nil?
         both_match += 1
@@ -90,6 +92,8 @@ Bio::FlatFile.auto(ARGV[0]) do |ff|
             output.write("\n+\n")
             output.write(sub_qual + "\n")
         end
+      else
+        not_both_match += 1
       end
     end
 
@@ -104,3 +108,4 @@ puts "Total seqs: #{total_seqs}"
 puts "Forward matches: #{forward_match}"
 puts "Reverse matches: #{reverse_match}"
 puts "Both match: #{both_match}"
+puts "Mismatched: #{not_both_match}"
